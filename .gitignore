@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+*.zip
+.vs/
+Debug/
+x64/
+zpg_cviceni1/Debug/
+zpg_cviceni1/x64/
