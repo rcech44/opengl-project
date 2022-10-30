@@ -148,7 +148,6 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelCollection.h" />
     <ClInclude Include="Models\plain.h" />
     <ClInclude Include="Models\sphere.h" />
     <ClInclude Include="Models\suziSmooth.h" />

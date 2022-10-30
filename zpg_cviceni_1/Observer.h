@@ -13,7 +13,8 @@ struct Observer
     virtual void notify(EventType eventType, void* object) = 0;
 };
 
-class Observable {
+class Observable 
+{
 private:
     std::vector<Observer*> observers;
 

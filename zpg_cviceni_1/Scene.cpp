@@ -49,6 +49,7 @@ void Scene::init()
 	Shader* sh1 = new Shader("Shaders/light_phong.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader
 	Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);									// light source shader
 	Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);								// object with constant color shader
+	Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);		// standard shader without light check
 
 	// Create objects
 	Model* m1 = new Model(suziSmooth, sizeof(suziSmooth), GL_TRIANGLES, 2904, 3, 3);
@@ -72,10 +73,13 @@ void Scene::init()
 	sh1->set();
 	sh2->set();
 	sh3->set();
+	sh4->set();
 
 	// Scene 0 - high number of trees, monkeys, gift, bushes and spheres randomly placed with light source above with "skybox" and ground
-	// Scene 1 - four spheres around light source 
-	int set_scene = 0;
+	// Scene 1 - four spheres around light source with light check
+	// Scene 2 - four spheres around light source without light check
+
+	int set_scene = 1;
 
 	switch (set_scene)
 	{
@@ -158,12 +162,17 @@ void Scene::init()
 			}
 			DrawableObject do_ground = DrawableObject(m4, sh1);
 			DrawableObject do_sky = DrawableObject(m2, sh3);
+			DrawableObject do_sun = DrawableObject(m2, sh2);
 			do_ground.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
 			do_sky.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
+			do_sun.setColor(glm::vec3(0.7f, 0.7f, 0.1f));
+			do_sun.move(glm::vec3(0.f, 50.f, 0.f));
 			do_ground.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 			do_sky.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+			do_sun.scale(glm::vec3(5.0f, 5.0f, 5.0f));
 			addObject(&do_ground);
 			addObject(&do_sky);
+			addObject(&do_sun);
 			break;	
 		}
 
@@ -173,6 +182,45 @@ void Scene::init()
 			DrawableObject do2 = DrawableObject(m2, sh1);
 			DrawableObject do3 = DrawableObject(m2, sh1);
 			DrawableObject do4 = DrawableObject(m2, sh1);
+			DrawableObject do5 = DrawableObject(m2, sh2);
+			DrawableObject do6 = DrawableObject(m4, sh1);
+			DrawableObject do7 = DrawableObject(m2, sh3);
+
+			do1.setColor(glm::vec3(0.5f, 0.0f, 0.0f));
+			do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+			do3.setColor(glm::vec3(0.0f, 0.0f, 0.5f));
+			do4.setColor(glm::vec3(0.5f, 0.5f, 0.0f));
+			do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+			do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
+			do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
+
+			do1.move(glm::vec3(-3.0f, 1.0f, 0.0f));
+			do2.move(glm::vec3(0.0f, 1.0f, -3.0f));
+			do3.move(glm::vec3(3.0f, 1.0f, 0.0f));
+			do4.move(glm::vec3(0.0f, 1.0f, 3.0f));
+			do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
+			//do5.move(glm::vec3(0.0f, 3.f, 0.f));
+			//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
+			do6.scale(glm::vec3(200.0f, 200.0f, 200.0f));
+			do6.move(glm::vec3(0.0f, -6.0f, 0.0f));
+			do6.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+			do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+
+			addObject(&do1);
+			addObject(&do2);
+			addObject(&do3);
+			addObject(&do4);
+			addObject(&do5);
+			addObject(&do6);
+			addObject(&do7);
+			break;
+		}
+		case 2:
+		{
+			DrawableObject do1 = DrawableObject(m2, sh4);
+			DrawableObject do2 = DrawableObject(m2, sh4);
+			DrawableObject do3 = DrawableObject(m2, sh4);
+			DrawableObject do4 = DrawableObject(m2, sh4);
 			DrawableObject do5 = DrawableObject(m2, sh2);
 			DrawableObject do6 = DrawableObject(m4, sh1);
 			DrawableObject do7 = DrawableObject(m2, sh3);
