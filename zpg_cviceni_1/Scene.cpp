@@ -79,7 +79,7 @@ void Scene::init()
 	// Scene 1 - four spheres around light source with light check
 	// Scene 2 - four spheres around light source without light check
 
-	int set_scene = 1;
+	int set_scene = 2;
 
 	switch (set_scene)
 	{
@@ -186,10 +186,10 @@ void Scene::init()
 			DrawableObject do6 = DrawableObject(m4, sh1);
 			DrawableObject do7 = DrawableObject(m2, sh3);
 
-			do1.setColor(glm::vec3(0.5f, 0.0f, 0.0f));
+			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
 			do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do3.setColor(glm::vec3(0.0f, 0.0f, 0.5f));
-			do4.setColor(glm::vec3(0.5f, 0.5f, 0.0f));
+			do3.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+			do4.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
 			do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 			do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
 			do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
@@ -217,26 +217,17 @@ void Scene::init()
 		}
 		case 2:
 		{
-			DrawableObject do1 = DrawableObject(m2, sh4);
-			DrawableObject do2 = DrawableObject(m2, sh4);
-			DrawableObject do3 = DrawableObject(m2, sh4);
-			DrawableObject do4 = DrawableObject(m2, sh4);
+			DrawableObject do1 = DrawableObject(m2, sh1);
 			DrawableObject do5 = DrawableObject(m2, sh2);
 			DrawableObject do6 = DrawableObject(m4, sh1);
 			DrawableObject do7 = DrawableObject(m2, sh3);
 
-			do1.setColor(glm::vec3(0.5f, 0.0f, 0.0f));
-			do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do3.setColor(glm::vec3(0.0f, 0.0f, 0.5f));
-			do4.setColor(glm::vec3(0.5f, 0.5f, 0.0f));
+			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
 			do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 			do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
 			do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
 
 			do1.move(glm::vec3(-3.0f, 1.0f, 0.0f));
-			do2.move(glm::vec3(0.0f, 1.0f, -3.0f));
-			do3.move(glm::vec3(3.0f, 1.0f, 0.0f));
-			do4.move(glm::vec3(0.0f, 1.0f, 3.0f));
 			do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
 			//do5.move(glm::vec3(0.0f, 3.f, 0.f));
 			//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -246,9 +237,6 @@ void Scene::init()
 			do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 
 			addObject(&do1);
-			addObject(&do2);
-			addObject(&do3);
-			addObject(&do4);
 			addObject(&do5);
 			addObject(&do6);
 			addObject(&do7);

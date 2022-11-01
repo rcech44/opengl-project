@@ -18,7 +18,7 @@ void DrawableObject::render(Camera* camera)
 
 	if (this->shader->getShaderType() == LightSource)
 	{
-		setPosition(glm::vec3(0.f, 50.f, 0.f));
+		setPosition(glm::vec3(0.f, 1.f, 0.f));
 		this->shader->vec3Insert(viewPos, "viewPos");
 		this->shader->vec3Insert(this->color, "objectColor");
 	}

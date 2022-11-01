@@ -64,7 +64,7 @@ glm::vec3 Camera::getPosition()
 
 void Camera::setProjection(int width, int height)
 {
-	this->projectMatrix = glm::perspective(glm::radians(80.0f), (float)width / (float)height, (float)(width / height), 200.0f);
+	this->projectMatrix = glm::perspective(glm::radians(80.0f), (float)width / (float)height, 0.1f, 200.0f);
 }
 
 void Camera::notify(EventType eventType, void* object) {
