@@ -8,42 +8,71 @@ DrawableObject::DrawableObject(Model* m, Shader* s)
 	this->shader = s;
 }
 
-void DrawableObject::render(Camera* camera)
+void DrawableObject::render(Camera* camera, std::vector<Light>* lights)
 {
-	glm::vec3 lightPos(0.f, 1.f, 0.f);
+	glm::vec3 lightPos(0.f, 50.f, 0.f);
 	glm::vec3 lightColor(0.8f, 0.8f, 0.8f);
 	glm::vec3 viewPos = camera->getPosition();
+	glm::vec3 viewDirection = camera->getTarget();
 
 	this->shader->useProgram();
 
 	if (this->shader->getShaderType() == LightSource)
 	{
-		setPosition(glm::vec3(0.f, 1.f, 0.f));
-		this->shader->vec3Insert(viewPos, "viewPos");
+		//this->shader->vec3Insert(viewPos, "viewPos");
 		this->shader->vec3Insert(this->color, "objectColor");
 	}
 
 	if (this->shader->getShaderType() == StandardObject)
 	{
 		//addRotation(glm::vec3(0.01,0,0));
-		this->shader->vec3Insert(lightPos, "lightPos");
-		this->shader->vec3Insert(lightColor, "lightColor");
+		//this->shader->vec3Insert(lightPos, "lightPos");
+		//this->shader->vec3Insert(lightColor, "lightColor");
+		this->shader->intInsert(lights->size(), "lightCount");
 		this->shader->vec3Insert(viewPos, "viewPos");
 		this->shader->vec3Insert(this->color, "objectColor");
+		for (int i = 0; i < lights->size(); i++)
+		{
+			if (lights->at(i).type == 3)
+			{
+				std::string l_pos = "lights[" + std::to_string(i) + "].position";
+				std::string l_color = "lights[" + std::to_string(i) + "].color";
+				std::string l_type = "lights[" + std::to_string(i) + "].type";
+				std::string l_cutoff = "lights[" + std::to_string(i) + "].cut";
+				std::string l_out_cutoff = "lights[" + std::to_string(i) + "].out_cut";
+				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
+				this->shader->vec3Insert(viewPos, l_pos.c_str());
+				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+				this->shader->intInsert(lights->at(i).type, l_type.c_str());
+				this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+				this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
+				this->shader->vec3Insert(viewDirection, l_dir.c_str());
+			}
+			else
+			{
+				std::string l_pos = "lights[" + std::to_string(i) + "].position";
+				std::string l_color = "lights[" + std::to_string(i) + "].color";
+				std::string l_type = "lights[" + std::to_string(i) + "].type";
+				std::string l_cutoff = "lights[" + std::to_string(i) + "].cut";
+				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
+				this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+				this->shader->intInsert(lights->at(i).type, l_type.c_str());
+				this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+				this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+			}
+		}
 	}
 
 	if (this->shader->getShaderType() == ConstantObject)
 	{
-		this->shader->vec3Insert(viewPos, "viewPos");
+		//this->shader->vec3Insert(viewPos, "viewPos");
 		this->shader->vec3Insert(this->color, "objectColor");
 	}
 
+	this->shader->applyCamera();
 	this->shader->matrixInsert(transform(), TransformMatrix);
 	this->model->render();
-
-	// unused
-	//camera->apply();
-	//glm::mat4 view = camera->getView();
 }
 
 glm::mat4 DrawableObject::transform()

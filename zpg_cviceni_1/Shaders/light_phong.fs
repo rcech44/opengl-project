@@ -20,7 +20,7 @@ void main ()
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float diff = dot(norm, lightDir);
 	vec3 diffuse = max(diff, 0.0) * lightColor;
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 	vec3 specular = specularStrength * spec * lightColor; 
 	if ( diff < 0.0)
 	{

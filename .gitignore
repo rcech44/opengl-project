@@ -1,3 +1,5 @@
+*.mp4
+
 # Prerequisites
 *.d
 
@@ -34,6 +36,10 @@
 *.zip
 .vs/
 Debug/
+Release/
 x64/
+zpg_cviceni1/Release/
 zpg_cviceni1/Debug/
 zpg_cviceni1/x64/
+*.vcxproj
+*.vcxproj.filters

@@ -14,6 +14,7 @@
 //Include classes
 #include "DrawableObject.h"
 #include "Camera.h"
+#include "Light.h"
 
 class Scene
 {
@@ -21,10 +22,13 @@ private:
 	Camera camera;
 
 public:
-	Scene() {};
 	std::vector<DrawableObject> objects;
+	std::vector<Light> lights;
+	Scene() {};
 	void addObject(DrawableObject* obj);
+	void addLight(Light* l);
 	Camera* getCamera();
+	std::vector<Light>* getLights();
 	void update();
 	void init();
 };

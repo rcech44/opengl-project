@@ -17,6 +17,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Light.h"
 
 class DrawableObject
 {
@@ -34,7 +35,7 @@ private:
 public:
 	DrawableObject() {};
 	DrawableObject(Model* m, Shader* s);
-	void render(Camera* camera);
+	void render(Camera* camera, std::vector<Light>* lights);
 
 	glm::mat4 transform();
 	void rotate(glm::vec3 rot);

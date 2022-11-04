@@ -98,12 +98,23 @@ void Shader::matrixInsert(glm::mat4 M, const char* variable)
 
 void Shader::vec3Insert(glm::vec3 &value, const char* variable)
 {
-	if (this->shader_type == StandardObject || variable == "objectColor")
-	{
-		GLint idModelTransform = glGetUniformLocation(this->program, variable);
-		if (idModelTransform == -1) printf("ERROR");
-		glUniform3fv(idModelTransform, 1, &value[0]);
-	}
+	GLint idModelTransform = glGetUniformLocation(this->program, variable);
+	if (idModelTransform == -1) printf("ERROR");
+	glUniform3fv(idModelTransform, 1, &value[0]);
+}
+
+void Shader::intInsert(int value, const char* variable)
+{
+	GLint idModelTransform = glGetUniformLocation(this->program, variable);
+	if (idModelTransform == -1) printf("ERROR");
+	glUniform1i(idModelTransform, value);
+}
+
+void Shader::floatInsert(float value, const char* variable)
+{
+	GLint idModelTransform = glGetUniformLocation(this->program, variable);
+	if (idModelTransform == -1) printf("ERROR");
+	glUniform1f(idModelTransform, value);
 }
 
 void Shader::useProgram()
@@ -116,12 +127,18 @@ int Shader::getShaderType()
 	return this->shader_type;
 }
 
+void Shader::applyCamera()
+{
+	matrixInsert(last_camera_view, ViewMatrix);
+	matrixInsert(last_camera_projection, ProjectionMatrix);
+}
+
 void Shader::notify(EventType eventType, void* object)
 {
 	if (eventType == EventType::CameraMoved)
 	{
 		Camera& camera = *((Camera*)object);
-		matrixInsert(camera.getView(), ViewMatrix);
-		matrixInsert(camera.getProjection(), ProjectionMatrix);
+		last_camera_view = camera.getView();
+		last_camera_projection = camera.getProjection();
 	}
 }

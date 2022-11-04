@@ -43,6 +43,8 @@ private:
 	GLuint vertex_shader_id = -1;
 	GLuint program = -1;
 	int shader_type = 1;
+	glm::mat4 last_camera_view;
+	glm::mat4 last_camera_projection;
 
 public:
 	Shader() {};
@@ -52,11 +54,14 @@ public:
 	void set();
 	void matrixInsert(glm::mat4 M, const char* variable);
 	void vec3Insert(glm::vec3& value, const char* variable);
+	void intInsert(int value, const char* variable);
+	void floatInsert(float value, const char* variable);
 	void createShaders();
 	void compileShaders();
 	void createProgram();
 	void useProgram();
 	int getShaderType();
+	void applyCamera();
 
 	// Observer
 	void notify(EventType eventType, void* object) override;

@@ -9,6 +9,7 @@ Camera::Camera()
 void Camera::setPosition(glm::vec3 position)
 {
 	eye = position;
+	apply();
 }
 
 void Camera::moveForward(Direction dir, double time)
@@ -17,6 +18,7 @@ void Camera::moveForward(Direction dir, double time)
 	if(dir == Direction::backward) this->eye -= (float)time * this->target * cameraMoveMultiplier;
 	//eye.z -= (float)((int)dir * time * cameraMoveMultiplier);
 	changed = true;
+	apply();
 }
 
 void Camera::moveSideways(Direction dir, double time)
@@ -25,6 +27,7 @@ void Camera::moveSideways(Direction dir, double time)
 	if (dir == Direction::right) this->eye += glm::normalize(glm::cross(this->target, this->up)) * (float)time * cameraMoveMultiplier;
 	//eye.x += (float)((int)dir * time * cameraMoveMultiplier);
 	changed = true;
+	apply();
 }
 
 void Camera::moveHeight(Direction dir, double time)
@@ -33,18 +36,13 @@ void Camera::moveHeight(Direction dir, double time)
 	if (dir == Direction::up) this->eye.y += (float)time * cameraYMoveMultiplier;
 	//eye.z -= (float)((int)dir * time * cameraMoveMultiplier);
 	changed = true;
+	apply();
 }
 
 void Camera::apply()
 {
 	this->camera = glm::lookAt(eye, eye + target, up);
-
-	// I dont get it... always true to get it working idk
-	if (changed)
-	{
-		notifyObservers(EventType::CameraMoved, this);
-		changed = true;
-	}
+	notifyObservers(EventType::CameraMoved, this);
 }
 
 glm::mat4 Camera::getView()
@@ -62,16 +60,23 @@ glm::vec3 Camera::getPosition()
 	return this->eye;
 }
 
+glm::vec3 Camera::getTarget()
+{
+	return this->target;
+}
+
 void Camera::setProjection(int width, int height)
 {
 	this->projectMatrix = glm::perspective(glm::radians(80.0f), (float)width / (float)height, 0.1f, 200.0f);
 }
 
-void Camera::notify(EventType eventType, void* object) {
-	if (eventType == EventType::MouseMoved) {
-		//printf("Mouse moved\n");
+void Camera::notify(EventType eventType, void* object)
+{
+	if (eventType == EventType::MouseMoved) 
+	{
 		glm::vec3 dir = ((Mouse*)object)->getDirection();
 		this->target = dir;
 		this->changed = true;
+		this->apply();
 	}
 }
