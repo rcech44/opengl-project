@@ -43,3 +43,6 @@ zpg_cviceni1/Debug/
 zpg_cviceni1/x64/
 *.vcxproj
 *.vcxproj.filters
+zpg_cviceni1/zpg_cviceni_1.vcxproj
+zpg_cviceni1/zpg_cviceni_1.vcxproj.filters
+zpg_cviceni1/zpg_cviceni_1.vcxproj.user

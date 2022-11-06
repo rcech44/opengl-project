@@ -105,11 +105,6 @@ void Application::update()
 	debugFPS();
 }
 
-void Application::mouseChangeState()
-{
-	this->mouse_enabled = !mouse_enabled;
-}
-
 void Application::setCallbacks()
 {
 	auto key = [](GLFWwindow* win, int key, int scancode, int action, int mods) {

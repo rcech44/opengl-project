@@ -20,16 +20,23 @@ class Scene
 {
 private:
 	Camera camera;
+	std::vector<Light> lights;
+	std::vector<DrawableObject> objects;
+	std::vector<DrawableObject> lightObjects;
+	bool flashlight = true;
 
 public:
-	std::vector<DrawableObject> objects;
-	std::vector<Light> lights;
 	Scene() {};
 	void addObject(DrawableObject* obj);
+	void addLightObject(DrawableObject* obj);
 	void addLight(Light* l);
 	Camera* getCamera();
 	std::vector<Light>* getLights();
 	void update();
 	void init();
+	void toggleFlashlight();
+	bool flashlightStatus();
+
+	float orbit = 1.f;
 };
 

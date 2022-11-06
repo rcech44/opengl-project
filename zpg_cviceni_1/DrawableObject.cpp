@@ -1,39 +1,40 @@
 #pragma once
 
 #include "DrawableObject.h"
+#include "Scene.h"
 
-DrawableObject::DrawableObject(Model* m, Shader* s)
+DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene)
 {
 	this->model = m;
 	this->shader = s;
+	this->scene = scene;
 }
 
-void DrawableObject::render(Camera* camera, std::vector<Light>* lights)
+void DrawableObject::render()
 {
-	glm::vec3 lightPos(0.f, 50.f, 0.f);
-	glm::vec3 lightColor(0.8f, 0.8f, 0.8f);
-	glm::vec3 viewPos = camera->getPosition();
-	glm::vec3 viewDirection = camera->getTarget();
+	std::vector<Light>* lights = scene->getLights();
+	glm::vec3 viewPos = scene->getCamera()->getPosition();
+	glm::vec3 viewDirection = scene->getCamera()->getTarget();
 
 	this->shader->useProgram();
 
-	if (this->shader->getShaderType() == LightSource)
+	switch (this->shader->getShaderType())
 	{
-		//this->shader->vec3Insert(viewPos, "viewPos");
-		this->shader->vec3Insert(this->color, "objectColor");
-	}
+		// Render objects that act like light source - they have constant color
+		case LightSource:
+			if (this->light != nullptr)
+			{
+				setPosition(glm::vec3(-glm::cos(glm::radians(this->scene->orbit)) * 30, this->light->position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
+			}
+			this->shader->vec3Insert(this->color, "objectColor");
+			break;
 
-	if (this->shader->getShaderType() == StandardObject)
-	{
-		//addRotation(glm::vec3(0.01,0,0));
-		//this->shader->vec3Insert(lightPos, "lightPos");
-		//this->shader->vec3Insert(lightColor, "lightColor");
-		this->shader->intInsert(lights->size(), "lightCount");
-		this->shader->vec3Insert(viewPos, "viewPos");
-		this->shader->vec3Insert(this->color, "objectColor");
-		for (int i = 0; i < lights->size(); i++)
-		{
-			if (lights->at(i).type == 3)
+		// Render all objects with light logic
+		case StandardObject:
+			this->shader->intInsert(lights->size(), "lightCount");
+			this->shader->vec3Insert(viewPos, "viewPos");
+			this->shader->vec3Insert(this->color, "objectColor");
+			for (size_t i = 0; i < lights->size(); i++)
 			{
 				std::string l_pos = "lights[" + std::to_string(i) + "].position";
 				std::string l_color = "lights[" + std::to_string(i) + "].color";
@@ -41,33 +42,52 @@ void DrawableObject::render(Camera* camera, std::vector<Light>* lights)
 				std::string l_cutoff = "lights[" + std::to_string(i) + "].cut";
 				std::string l_out_cutoff = "lights[" + std::to_string(i) + "].out_cut";
 				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
-				this->shader->vec3Insert(viewPos, l_pos.c_str());
-				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-				this->shader->intInsert(lights->at(i).type, l_type.c_str());
-				this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-				this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
-				this->shader->vec3Insert(viewDirection, l_dir.c_str());
-			}
-			else
-			{
-				std::string l_pos = "lights[" + std::to_string(i) + "].position";
-				std::string l_color = "lights[" + std::to_string(i) + "].color";
-				std::string l_type = "lights[" + std::to_string(i) + "].type";
-				std::string l_cutoff = "lights[" + std::to_string(i) + "].cut";
-				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
-				this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-				this->shader->intInsert(lights->at(i).type, l_type.c_str());
-				this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-				this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-			}
-		}
-	}
+				std::string l_strength = "lights[" + std::to_string(i) + "].strength";
 
-	if (this->shader->getShaderType() == ConstantObject)
-	{
-		//this->shader->vec3Insert(viewPos, "viewPos");
-		this->shader->vec3Insert(this->color, "objectColor");
+				// Process all light types
+				switch (lights->at(i).type)
+				{
+					case LightType::SpotlightCamera:
+
+						// Check if flashlight is turned on or off
+						if (scene->flashlightStatus())
+						{
+							this->shader->intInsert(1, "flashlightEnabled");
+							this->shader->vec3Insert(viewPos, l_pos.c_str());
+							this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+							this->shader->intInsert(lights->at(i).type, l_type.c_str());
+							this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+							this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
+							this->shader->vec3Insert(viewDirection, l_dir.c_str());
+							this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+						}
+						else this->shader->intInsert(0, "flashlightEnabled");
+						break;
+					case LightType::PointOrbital:
+						lights->at(i).setPosition(glm::vec3( -glm::cos(glm::radians(this->scene->orbit)) * 30, lights->at(i).position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
+						this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+						this->shader->intInsert(LightType::Point, l_type.c_str());
+						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+						this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+						break;
+					default:
+						this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+						this->shader->intInsert(lights->at(i).type, l_type.c_str());
+						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+						this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+						break;
+				}
+			}
+			break;
+
+		// Render all objects that have constant color
+		case ConstantObject:
+			this->shader->vec3Insert(this->color, "objectColor");
+			break;
 	}
 
 	this->shader->applyCamera();
@@ -120,4 +140,9 @@ void DrawableObject::setAutoRotateSettings(float multiplier)
 void DrawableObject::setColor(glm::vec3 color)
 {
 	this->color = color;
+}
+
+void DrawableObject::assignLight(Light& l)
+{
+	this->light = &l;
 }

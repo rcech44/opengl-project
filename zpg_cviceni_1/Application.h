@@ -36,16 +36,6 @@ private:
 	long frame_count = 0;
 	double now_time = 0;
 
-	// mouse
-	double last_x;
-	double last_y;
-	bool ever_moved = false;
-	float yaw = -90.0f;
-	float pitch = 0.0f;
-	bool mouse_enabled = false;
-	double mouse_before_x;
-	double mouse_before_y;
-
 	// callbacks
 	void setCallbacks();
 	void error_callback(int error, const char* description);
@@ -67,5 +57,4 @@ public:
 	void printInfo();
 	void debugFPS();
 	void update();
-	void mouseChangeState();
 };

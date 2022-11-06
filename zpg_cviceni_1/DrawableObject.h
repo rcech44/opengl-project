@@ -19,23 +19,30 @@
 #include "Camera.h"
 #include "Light.h"
 
+class Scene;
+
 class DrawableObject
 {
 private:
 	glm::vec3 translation{ 0.f };
 	glm::vec3 rotation{ 0.f };
 	glm::vec3 size{ 1.f };
+	glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+
+	// references
+	Scene* scene = nullptr;
 	Model* model = nullptr;
 	Shader* shader = nullptr;
-	glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+
+	// optional
+	Light* light = nullptr;
 
 	// other properties - unused
 	float auto_rotate_multiplier = -1.f;
 
 public:
-	DrawableObject() {};
-	DrawableObject(Model* m, Shader* s);
-	void render(Camera* camera, std::vector<Light>* lights);
+	DrawableObject(Model* m, Shader* s, Scene* scene);
+	void render();
 
 	glm::mat4 transform();
 	void rotate(glm::vec3 rot);
@@ -45,5 +52,6 @@ public:
 	void scale(glm::vec3 scale);
 	void setAutoRotateSettings(float multiplier);
 	void setColor(glm::vec3 color);
+	void assignLight(Light& l);
 };
 

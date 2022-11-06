@@ -18,7 +18,8 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 		printf("[INIT] Exiting...\n");
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-		
+	
+	if (action != GLFW_PRESS)
 	switch (key)
 	{
 		case GLFW_KEY_W:
@@ -52,6 +53,7 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 			break;
 
 		case GLFW_KEY_E:
+			scene.toggleFlashlight();
 			/*if (action == GLFW_PRESS)
 			{
 				this->mouse_before_x = mouse.getX();
@@ -88,12 +90,9 @@ void Application::window_size_callback(GLFWwindow* window, int width, int height
 
 void Application::cursor_callback(GLFWwindow* window, double x, double y)
 {
-	if (!this->mouse_enabled)
-	{
-		mouse.calculatePosition(x, y);
-		mouse.calculateDirection();
-		mouse.apply();
-	}
+	mouse.calculatePosition(x, y);
+	mouse.calculateDirection();
+	mouse.apply();
 	//printf("Cursor location changed: %f, %f \n", x, y);
 }
 

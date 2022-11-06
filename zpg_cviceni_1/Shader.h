@@ -47,7 +47,6 @@ private:
 	glm::mat4 last_camera_projection;
 
 public:
-	Shader() {};
 	Shader(const char** fs, const char** vs, int type);
 	Shader(const char* fs_loc, const char* vs_loc, int type);
 

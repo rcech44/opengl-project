@@ -17,11 +17,16 @@ namespace bushes
 	#include "Models/bushes.h"
 }
 
-
 void Scene::addObject(DrawableObject* obj)
 {
 	this->objects.emplace_back(*obj);
 	printf("[SCENE] Added one object to render vector. Current objects: %d\n", objects.size());
+}
+
+void Scene::addLightObject(DrawableObject* obj)
+{
+	this->lightObjects.emplace_back(*obj);
+	printf("[SCENE] Added one light object to render vector. Current objects: %d\n", objects.size());
 }
 
 void Scene::addLight(Light* l)
@@ -45,19 +50,22 @@ void Scene::update()
 	glClearColor(0.07f, 0.07f, 0.07f, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//camera.apply();
+	camera.apply();
 	for (auto& d : objects)
 	{
-		//d.addRotation(glm::vec3(0.f, -0.003f, 0.f));
-		//camera.apply();
-		d.render(getCamera(), this->getLights());
+		d.render();
 	}
+	for (auto& d : lightObjects)
+	{
+		d.render();
+	}
+	this->orbit++;
 }
 
 void Scene::init()
 {
 	// Create shaders
-	Shader* sh1 = new Shader("Shaders/light_test_1.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader
+	Shader* sh1 = new Shader("Shaders/multiple_lights.glsl", "Shaders/light_camera.vs", StandardObject);		// standard shader
 	Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);									// light source shader
 	Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);								// object with constant color shader
 	Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);		// standard shader without light check
@@ -90,32 +98,78 @@ void Scene::init()
 	// Scene 1 - four spheres around light source with light check
 	// Scene 2 - four spheres around light source without light check
 
-	int set_scene = 1;
+	int set_scene = 0;
 
 	switch (set_scene)
 	{
 		case 0:
 		{	
-			int tree_count = 300;
-			int monkey_count = 50;
-			int sphere_count = 50;
-			int bushes_count = 150;
-			int gift_count = 50;
+			Light light2 = Light(LightType::PointOrbital);
+			Light light3 = Light(LightType::Directional);
+			Light light4 = Light(LightType::SpotlightCamera);
+
+			light2.setColor(glm::vec3(1, 1, 0));
+			light2.setPosition(glm::vec3(0.0, 20.0, 0.0));
+			light2.setStrength(20);
+			light3.setColor(glm::vec3(1, 1, 1));
+			light3.setDirection(glm::vec3(0.0, -1.0, 0.0));
+			light3.setStrength(0.01f);
+			light4.setColor(glm::vec3(1, 1, 1));
+			light4.setPosition(glm::vec3(-3.0, -2.0, 0.0));
+			light4.setDirection(glm::vec3(0.0, 4.0, 0.0));
+			light4.setCutoff(glm::cos(glm::radians(30.f)));
+			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
+			light4.setStrength(2);
+
+			addLight(&light2);
+			addLight(&light3);
+			addLight(&light4);
+
+			// Generate random point lights
+			/*for (int i = 0; i < 15; i++)
+			{
+				Light l = Light(LightType::Point);
+				l.setColor(glm::vec3(1, 1, 1));
+				float x = -40.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (40.0f - (-40.0f))));
+				float z = -40.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (40.0f - (-40.0f))));
+				l.setPosition(glm::vec3(x, 3, z));
+				addLight(&l);
+			}*/
+
+			// Render all light sources as light spheres
+			for (Light& l : lights)
+			{
+				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
+				{
+					DrawableObject do_temp = DrawableObject(m2, sh2, this);
+					do_temp.setColor(l.color);
+					do_temp.move(l.position);
+					do_temp.scale(glm::vec3(2, 2, 2));
+					do_temp.assignLight(l);
+					addLightObject(&do_temp);
+				}
+			}
+
+			int tree_count = 200;
+			int monkey_count = 5;
+			int sphere_count = 5;
+			int bushes_count = 5;
+			int gift_count = 5;
 			srand(static_cast <unsigned> (time(0)));
 			for (int i = 0; i < tree_count; i++)
 			{
-				DrawableObject do_x = DrawableObject(m5, sh1);
+				DrawableObject do_x = DrawableObject(m5, sh1, this);
 				float color = 0.3f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.9f - 0.3f)));
 				do_x.setColor(glm::vec3(0.2f, color, 0.2f));
 				// https://stackoverflow.com/questions/686353/random-float-number-generation
 				float x = -70.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (70.0f - (-70.0f))));
 				float y = -70.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (70.0f - (-70.0f))));
-				do_x.move(glm::vec3(x, 1.0f, y));
+				do_x.move(glm::vec3(x, 0.0f, y));
 				addObject(&do_x);
 			}
 			for (int i = 0; i < monkey_count; i++)
 			{
-				DrawableObject do_x = DrawableObject(m1, sh1);
+				DrawableObject do_x = DrawableObject(m1, sh1, this);
 				float color_r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_g = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_b = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
@@ -128,7 +182,7 @@ void Scene::init()
 			}
 			for (int i = 0; i < sphere_count; i++)
 			{
-				DrawableObject do_x = DrawableObject(m2, sh1);
+				DrawableObject do_x = DrawableObject(m2, sh1, this);
 				float color_r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_g = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_b = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
@@ -143,7 +197,7 @@ void Scene::init()
 			}
 			for (int i = 0; i < bushes_count; i++)
 			{
-				DrawableObject do_x = DrawableObject(m6, sh1);
+				DrawableObject do_x = DrawableObject(m6, sh1, this);
 				float color_r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_g = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_b = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
@@ -158,7 +212,7 @@ void Scene::init()
 			}
 			for (int i = 0; i < gift_count; i++)
 			{
-				DrawableObject do_x = DrawableObject(m7, sh1);
+				DrawableObject do_x = DrawableObject(m7, sh1, this);
 				float color_r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_g = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
 				float color_b = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.f)));
@@ -171,11 +225,11 @@ void Scene::init()
 				do_x.scale(glm::vec3(scale, scale, scale));
 				addObject(&do_x);
 			}
-			DrawableObject do_ground = DrawableObject(m4, sh1);
-			DrawableObject do_sky = DrawableObject(m2, sh3);
-			DrawableObject do_sun = DrawableObject(m2, sh2);
+			DrawableObject do_ground = DrawableObject(m4, sh1, this);
+			DrawableObject do_sky = DrawableObject(m2, sh3, this);
+			DrawableObject do_sun = DrawableObject(m2, sh2, this);
 			do_ground.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
-			do_sky.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
+			do_sky.setColor(glm::vec3(0.0f, 0.0f, 0.0f));
 			do_sun.setColor(glm::vec3(0.7f, 0.7f, 0.1f));
 			do_sun.move(glm::vec3(0.f, 50.f, 0.f));
 			do_ground.scale(glm::vec3(150.0f, 150.0f, 150.0f));
@@ -188,44 +242,45 @@ void Scene::init()
 		}
 		case 1:
 		{
-			Light light1 = Light(LightType::Point);
-			Light light2 = Light(LightType::Point);
 			Light light3 = Light(LightType::Point);
-			Light light4 = Light(LightType::Spotlight);
+			Light light4 = Light(LightType::SpotlightCamera);
+			Light light5 = Light(LightType::Directional);
 
-			light1.setColor(glm::vec3(1,1,1));
-			light2.setColor(glm::vec3(1,1,1));
 			light3.setColor(glm::vec3(1,1,1));
 			light4.setColor(glm::vec3(1,1,1));
-			light1.setPosition(glm::vec3(0.0,3.0,0.0));
-			light2.setPosition(glm::vec3(4.0,1.0,4.0));
+			light5.setColor(glm::vec3(1,1,1));
 			light3.setPosition(glm::vec3(0.0,1.0,0.0));
 			light4.setPosition(glm::vec3(-3.0,-2.0,0.0));
 			light4.setDirection(glm::vec3(0.0,4.0,0.0));
 			light4.setCutoff(glm::cos(glm::radians(30.f)));
 			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
+			light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
+			light5.setStrength(0.3f);
 
-			//addLight(&light1);
-			//addLight(&light2);
-			//addLight(&light3);
+			addLight(&light3);
 			addLight(&light4);
+			addLight(&light5);
 
-			for (Light l : lights)
+			// Render all light sources as light spheres
+			for (Light &l : lights)
 			{
-				DrawableObject do_temp = DrawableObject(m2, sh2);
-				do_temp.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-				do_temp.move(l.position);
-				do_temp.scale(glm::vec3(0.4,0.4,0.4));
-				addObject(&do_temp);
+				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
+				{
+					DrawableObject do_temp = DrawableObject(m2, sh2, this);
+					do_temp.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+					do_temp.move(l.position);
+					do_temp.scale(glm::vec3(0.4, 0.4, 0.4));
+					addObject(&do_temp);
+				}
 			}
 
-			DrawableObject do1 = DrawableObject(m2, sh1);
-			DrawableObject do2 = DrawableObject(m2, sh1);
-			DrawableObject do3 = DrawableObject(m2, sh1);
-			DrawableObject do4 = DrawableObject(m2, sh1);
+			DrawableObject do1 = DrawableObject(m2, sh1, this);
+			DrawableObject do2 = DrawableObject(m2, sh1, this);
+			DrawableObject do3 = DrawableObject(m2, sh1, this);
+			DrawableObject do4 = DrawableObject(m2, sh1, this);
 			//DrawableObject do5 = DrawableObject(m2, sh2);
-			DrawableObject do6 = DrawableObject(m4, sh1);
-			DrawableObject do7 = DrawableObject(m2, sh3);
+			DrawableObject do6 = DrawableObject(m4, sh1, this);
+			DrawableObject do7 = DrawableObject(m2, sh3, this);
 
 			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
 			do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
@@ -256,10 +311,10 @@ void Scene::init()
 		}
 		case 2:
 		{
-			DrawableObject do1 = DrawableObject(m2, sh1);
-			DrawableObject do5 = DrawableObject(m2, sh2);
-			DrawableObject do6 = DrawableObject(m4, sh1);
-			DrawableObject do7 = DrawableObject(m2, sh3);
+			DrawableObject do1 = DrawableObject(m2, sh1, this);
+			DrawableObject do5 = DrawableObject(m2, sh2, this);
+			DrawableObject do6 = DrawableObject(m4, sh1, this);
+			DrawableObject do7 = DrawableObject(m2, sh3, this);
 
 			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
 			do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -287,4 +342,14 @@ void Scene::init()
 	getCamera()->registerObserver(*sh1);
 	getCamera()->registerObserver(*sh2);
 	getCamera()->registerObserver(*sh3);
+}
+
+void Scene::toggleFlashlight()
+{
+	this->flashlight = !flashlight;
+}
+
+bool Scene::flashlightStatus()
+{
+	return flashlight;
 }

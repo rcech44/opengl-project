@@ -20,7 +20,6 @@ private:
 	int color_size = 0;
 
 public:
-	Model() {};
 	Model(const float* p, size_t size, int type, int number_of_objects, int coords_size, int color_size);
 	void set();
 	void render();

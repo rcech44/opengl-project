@@ -29,3 +29,8 @@ void Light::setOuterCutoff(float f)
 {
 	this->outer_cutoff = f;
 }
+
+void Light::setStrength(float f)
+{
+	this->strength = f;
+}
