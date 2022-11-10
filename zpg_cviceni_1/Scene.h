@@ -23,13 +23,17 @@ private:
 	std::vector<Light> lights;
 	std::vector<DrawableObject> objects;
 	std::vector<DrawableObject> lightObjects;
+	std::vector<DrawableObject> skyboxes;
+	std::vector<Texture> textures;
 	bool flashlight = true;
 
 public:
 	Scene() {};
 	void addObject(DrawableObject* obj);
 	void addLightObject(DrawableObject* obj);
+	void addSkybox(DrawableObject* obj);
 	void addLight(Light* l);
+	void addTexture(Texture* t);
 	Camera* getCamera();
 	std::vector<Light>* getLights();
 	void update();

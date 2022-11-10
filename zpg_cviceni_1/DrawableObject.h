@@ -18,6 +18,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Texture.h"
 
 class Scene;
 
@@ -35,6 +36,7 @@ private:
 	Shader* shader = nullptr;
 
 	// optional
+	int texture = -1;
 	Light* light = nullptr;
 
 	// other properties - unused
@@ -53,5 +55,6 @@ public:
 	void setAutoRotateSettings(float multiplier);
 	void setColor(glm::vec3 color);
 	void assignLight(Light& l);
+	void assignTexture(int t);
 };
 

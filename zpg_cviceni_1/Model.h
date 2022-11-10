@@ -7,6 +7,9 @@
 #include <GLFW/glfw3.h>  
 #include <glm/vec3.hpp> // glm::vec3
 
+//Include SOIL
+#include <SOIL.h>
+
 class Model
 {
 private:
@@ -22,6 +25,8 @@ private:
 public:
 	Model(const float* p, size_t size, int type, int number_of_objects, int coords_size, int color_size);
 	void set();
+	void setSkyBox();
+	void setWithTexture();
 	void render();
 };
 
