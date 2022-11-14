@@ -92,28 +92,28 @@ void Shader::set()
 void Shader::matrixInsert(glm::mat4 M, const char* variable)
 {
 	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("ERROR");
+	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
 	glUniformMatrix4fv(idModelTransform, 1, GL_FALSE, &M[0][0]);
 }
 
 void Shader::vec3Insert(glm::vec3 &value, const char* variable)
 {
 	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("ERROR");
+	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
 	glUniform3fv(idModelTransform, 1, &value[0]);
 }
 
 void Shader::intInsert(int value, const char* variable)
 {
 	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("ERROR");
+	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
 	glUniform1i(idModelTransform, value);
 }
 
 void Shader::floatInsert(float value, const char* variable)
 {
 	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("ERROR");
+	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
 	glUniform1f(idModelTransform, value);
 }
 

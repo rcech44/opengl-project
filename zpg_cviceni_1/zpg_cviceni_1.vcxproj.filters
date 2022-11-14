@@ -99,4 +99,7 @@
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

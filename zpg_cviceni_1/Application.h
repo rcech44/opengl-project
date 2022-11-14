@@ -57,4 +57,7 @@ public:
 	void printInfo();
 	void debugFPS();
 	void update();
+
+	Application(Application const&) = delete;
+	void operator=(Application const&) = delete;
 };

@@ -150,13 +150,13 @@ void Scene::init()
 			addTexture(&t4);
 
 
-			Light light2 = Light(LightType::PointOrbital);
+			//Light light2 = Light(LightType::PointOrbital);
 			Light light3 = Light(LightType::Directional);
 			Light light4 = Light(LightType::SpotlightCamera);
 
-			light2.setColor(glm::vec3(1, 1, 0));
+			/*light2.setColor(glm::vec3(1, 1, 0));
 			light2.setPosition(glm::vec3(0.0, 20.0, 0.0));
-			light2.setStrength(20);
+			light2.setStrength(20);*/
 			light3.setColor(glm::vec3(1, 1, 1));
 			light3.setDirection(glm::vec3(0.0, -1.0, 0.0));
 			light3.setStrength(0.5f);
@@ -167,8 +167,8 @@ void Scene::init()
 			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
 			light4.setStrength(2);
 
-			addLight(&light2);
-			addLight(&light3);
+			//addLight(&light2);
+			//addLight(&light3);
 			addLight(&light4);
 
 			// Generate random point lights
