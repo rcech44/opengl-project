@@ -29,6 +29,7 @@ private:
 	glm::vec3 rotation{ 0.f };
 	glm::vec3 size{ 1.f };
 	glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+	int id = -1;
 
 	// references
 	Scene* scene = nullptr;
@@ -43,7 +44,7 @@ private:
 	float auto_rotate_multiplier = -1.f;
 
 public:
-	DrawableObject(Model* m, Shader* s, Scene* scene);
+	DrawableObject(Model* m, Shader* s, Scene* scene, int id);
 	void render();
 
 	glm::mat4 transform();
@@ -56,5 +57,6 @@ public:
 	void setColor(glm::vec3 color);
 	void assignLight(Light& l);
 	void assignTexture(int t);
+	int getID();
 };
 

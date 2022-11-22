@@ -25,13 +25,21 @@ private:
 	std::vector<DrawableObject> lightObjects;
 	std::vector<DrawableObject> skyboxes;
 	std::vector<Texture> textures;
+	std::vector<Shader*> shaders;
+	std::vector<Model*> models;
 	bool flashlight = true;
+	int object_id = 0;
 
 public:
 	Scene() {};
 	void addObject(DrawableObject* obj);
+	void placeNewObject(glm::vec3 pos, int object_name);
 	void addLightObject(DrawableObject* obj);
 	void addSkybox(DrawableObject* obj);
+	void addShader(Shader* sh);
+	void addModel(Model* m);
+	Model* getModel(int index);
+	Shader* getShader(int index);
 	void addLight(Light* l);
 	void addTexture(Texture* t);
 	Camera* getCamera();

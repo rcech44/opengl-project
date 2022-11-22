@@ -16,6 +16,7 @@ void Camera::moveForward(Direction dir, double time)
 {
 	if(dir == Direction::forward) this->eye += (float)time * this->target * cameraMoveMultiplier;
 	if(dir == Direction::backward) this->eye -= (float)time * this->target * cameraMoveMultiplier;
+	printf("%f %f\n", eye.x, eye.z);
 	//eye.z -= (float)((int)dir * time * cameraMoveMultiplier);
 	changed = true;
 	apply();

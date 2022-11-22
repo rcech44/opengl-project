@@ -25,8 +25,8 @@ private:
     glm::mat4 projectMatrix = glm::perspective(glm::radians(80.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 200.0f);
 
     bool changed = true;
-    float cameraMoveMultiplier = 15.f;
-    float cameraYMoveMultiplier = 30.f;
+    float cameraMoveMultiplier = 50.f;
+    float cameraYMoveMultiplier = 50.f;
 
 public:
     Camera();

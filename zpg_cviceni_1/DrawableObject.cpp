@@ -3,11 +3,12 @@
 #include "DrawableObject.h"
 #include "Scene.h"
 
-DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene)
+DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene, int id)
 {
 	this->model = m;
 	this->shader = s;
 	this->scene = scene;
+	this->id = id;
 }
 
 void DrawableObject::render()
@@ -88,7 +89,7 @@ void DrawableObject::render()
 		// Render all objects that have constant color
 		case ConstantObject:
 			//this->shader->vec3Insert(this->color, "objectColor");
-			this->shader->intInsert(this->texture, "textureUnitID");
+			//this->shader->intInsert(this->texture, "textureUnitID");
 			break;
 
 		case SkyBox:
@@ -98,6 +99,7 @@ void DrawableObject::render()
 			this->shader->matrixInsert(glm::mat4(glm::mat3(this->scene->getCamera()->getView())), ViewMatrix);
 			this->shader->matrixInsert(glm::mat4(this->scene->getCamera()->getProjection()), ProjectionMatrix);
 			this->shader->intInsert(0, "UISky");
+			glStencilFunc(GL_ALWAYS, this->getID(), 0xFF);
 			this->model->render();
 			glDepthMask(GL_TRUE);
 			break;
@@ -168,6 +170,7 @@ void DrawableObject::render()
 	{
 		this->shader->applyCamera();
 		this->shader->matrixInsert(transform(), TransformMatrix);
+		glStencilFunc(GL_ALWAYS, this->getID(), 0xFF);
 		this->model->render();
 	}
 }
@@ -227,4 +230,9 @@ void DrawableObject::assignLight(Light& l)
 void DrawableObject::assignTexture(int t)
 {
 	this->texture = t;
+}
+
+int DrawableObject::getID()
+{
+	return this->id;
 }
