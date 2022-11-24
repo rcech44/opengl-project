@@ -168,6 +168,63 @@ void Model::setObject()
 	
 }
 
+void Model::setObjectWithNormals()
+{
+	Assimp::Importer importer;
+	unsigned int importOptions = aiProcess_Triangulate
+		| aiProcess_OptimizeMeshes              // slouèení malých plošek
+		| aiProcess_JoinIdenticalVertices       // NUTNÉ jinak hodnì duplikuje
+		| aiProcess_Triangulate                 // prevod vsech ploch na trojuhelniky
+		| aiProcess_CalcTangentSpace;           // vypocet tangenty, nutny pro spravne pouziti normalove mapy
+	const aiScene* scene = importer.ReadFile(path, importOptions);
+	if (scene) {
+		aiMesh* mesh = scene->mMeshes[0];
+		this->number_of_objects = mesh->mNumFaces * 3;
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+			for (unsigned int j = 0; j < 3; j++)
+			{
+				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].x);
+				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].y);
+				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].z);
+				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].x);
+				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].y);
+				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].z);
+				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].x);
+				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].y);
+				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].x);
+				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].y);
+				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].z);
+			}
+		}
+	}
+	//Vertex Array Object (VAO)
+	GLuint VBO = 0;
+	glGenBuffers(1, &VBO); // generate the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, points_obj.size() * sizeof(float), &points_obj[0], GL_STATIC_DRAW);
+	this->VBO = VBO;
+
+	GLuint VAO = 0;
+	glGenVertexArrays(1, &VAO); //generate the VAO
+	glBindVertexArray(VAO); //bind the VAO
+	this->VAO = VAO;
+
+	//enable vertex attributes
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)(sizeof(float) * color_size));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)(sizeof(float) * (coords_size + color_size)));
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)(sizeof(float) * (coords_size + color_size + 2)));
+
+}
+
 void Model::render()
 {
 	switch (this->type)

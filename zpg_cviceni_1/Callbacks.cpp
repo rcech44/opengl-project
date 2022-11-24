@@ -117,7 +117,7 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 		glm::mat4 projection = this->scene.getCamera()->getProjection();
 		glm::vec4 viewPort = glm::vec4(0, 0, width, height);
 		glm::vec3 pos = glm::unProject(screenX, view, projection, viewPort);
-		printf("%f %f %f\n", pos.x, pos.y, pos.z);
+		//printf("%f %f %f\n", pos.x, pos.y, pos.z);
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
 			this->scene.placeNewObject(pos, Tree2);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)

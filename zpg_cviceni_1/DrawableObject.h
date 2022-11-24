@@ -38,6 +38,7 @@ private:
 
 	// optional
 	int texture = -1;
+	int normal = -1;
 	Light* light = nullptr;
 
 	// other properties - unused
@@ -57,6 +58,7 @@ public:
 	void setColor(glm::vec3 color);
 	void assignLight(Light& l);
 	void assignTexture(int t);
+	void assignTexture(int t, int n);
 	int getID();
 };
 

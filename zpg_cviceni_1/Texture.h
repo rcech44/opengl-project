@@ -26,13 +26,16 @@ class Texture
 {
 private:
 	int id = -1;
+	int normal_id = -1;
 	int type = 0;
 
 public:
 	Texture() {};
 	void assignTexture(const char* path);
+	void assignTextureWithNormal(const char* path_t, const char* path_n);
 	void assignTexture(const char* path1, const char* path2, const char* path3, const char* path4, const char* path5, const char* path6);
 	void setTextureType(int type);
 	int getID();
+	int getNormalID();
 };
 

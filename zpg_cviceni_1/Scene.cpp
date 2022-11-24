@@ -129,6 +129,7 @@ void Scene::init()
 	// Create shaders
 	Shader* sh1 = new Shader("Shaders/multiple_lights.glsl", "Shaders/light_camera.vs", StandardObject);		// standard shader
 	Shader* sh6 = new Shader("Shaders/texture.fs", "Shaders/texture.vs", StandardObjectTextured);				// standard shader
+	Shader* sh8 = new Shader("Shaders/texture_normal.fs", "Shaders/texture_normal.vs", StandardObjectTexturedNormal);				// standard shader
 	Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);									// light source shader
 	Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);								// object with constant color shader
 	Shader* sh5 = new Shader("Shaders/fs1_texture.fs", "Shaders/vs1_texture.vs", ConstantObject);				// object with constant color shader with texture
@@ -147,6 +148,7 @@ void Scene::init()
 	Model* m10 = new Model(Zombie, ObjectType, "Models/zombie/zombie.obj", GL_TRIANGLES, 3, 3);
 	Model* m11 = new Model(Tree2, ObjectType, "Models/tree/tree.obj", GL_TRIANGLES, 3, 3);
 	Model* m12 = new Model(Plain2, ObjectType, "Models/teren/teren.obj", GL_TRIANGLES, 3, 3);
+	Model* m13 = new Model(Box, ObjectType, "Models/box/model.obj", GL_TRIANGLES, 3, 3);
 
 	// Models init
 	m1->set();
@@ -161,6 +163,7 @@ void Scene::init()
 	m10->setObject();
 	m11->setObject();
 	m12->setObject();
+	m13->setObjectWithNormals();
 	addModel(m1);
 	addModel(m2);
 	addModel(m4);
@@ -172,6 +175,7 @@ void Scene::init()
 	addModel(m10);
 	addModel(m11);
 	addModel(m12);
+	addModel(m13);
 
 	// Shaders init
 	sh1->set();
@@ -181,6 +185,7 @@ void Scene::init()
 	sh5->set();
 	sh6->set();
 	sh7->set();
+	sh8->set();
 	addShader(sh1);
 	addShader(sh2);
 	addShader(sh3);
@@ -188,6 +193,7 @@ void Scene::init()
 	addShader(sh5);
 	addShader(sh6);
 	addShader(sh7);
+	addShader(sh8);
 
 
 	// Scene 0 - high number of trees, monkeys, gift, bushes and spheres randomly placed with light source above with "skybox" and ground
@@ -226,34 +232,46 @@ void Scene::init()
 			t4.assignTexture("Textures/skybox2/px.png", "Textures/skybox2/nx.png", "Textures/skybox2/py.png", "Textures/skybox2/ny.png", "Textures/skybox2/pz.png", "Textures/skybox2/nz.png");
 			addTexture(&t4);
 
+			Texture t8 = Texture();
+			t8.setTextureType(TextureType::Standard);
+			t8.assignTextureWithNormal("Models/box/albedo.png", "Models/box/normalmap.png");
+			addTexture(&t8);
+
 
 			Light light3 = Light(LightType::Point);
 			Light light4 = Light(LightType::SpotlightCamera);
 			Light light5 = Light(LightType::Directional);
 			Light light6 = Light(LightType::Point);
 			Light light7 = Light(LightType::Point);
+			Light light8 = Light(LightType::Point);
 
-			light3.setColor(glm::vec3(1, 1, 1));
+			light3.setColor(glm::vec3(0.8, 0, 1));
 			light4.setColor(glm::vec3(1, 1, 1));
 			light5.setColor(glm::vec3(1, 1, 1));
-			light6.setColor(glm::vec3(1, 1, 1));
-			light7.setColor(glm::vec3(1, 1, 1));
+			light6.setColor(glm::vec3(1, 1, 0));
+			light7.setColor(glm::vec3(0, 0.8, 1));
+			light8.setColor(glm::vec3(1, 1, 1));
 			light3.setPosition(glm::vec3(-12.0, 2.0, -10.0));
 			light4.setPosition(glm::vec3(-3.0, -2.0, 0.0));
 			light6.setPosition(glm::vec3(-4.0, 2.0, -15.0));
 			light7.setPosition(glm::vec3(-6.8, 6.0, -9.5));
+			light8.setPosition(glm::vec3(0, 2, 0));
 			light4.setDirection(glm::vec3(0.0, 4.0, 0.0));
 			light4.setCutoff(glm::cos(glm::radians(30.f)));
 			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
 			light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
-			light5.setStrength(0.2f);
+			light5.setStrength(0.1f);
+			light3.setStrength(3.f);
+			light6.setStrength(3.f);
 			light7.setStrength(3.f);
+			light8.setStrength(1.f);
 
 			addLight(&light3);
 			addLight(&light4);
 			addLight(&light5);
 			addLight(&light6);
 			addLight(&light7);
+			addLight(&light8);
 
 			// Render all light sources as light spheres
 			for (Light& l : lights)
@@ -261,12 +279,16 @@ void Scene::init()
 				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
 				{
 					DrawableObject do_temp = DrawableObject(m2, sh2, this, object_id++);
-					do_temp.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+					do_temp.setColor(l.color);
 					do_temp.move(l.position);
 					do_temp.scale(glm::vec3(0.4, 0.4, 0.4));
 					addObject(&do_temp);
 				}
 			}
+
+			DrawableObject do_box = DrawableObject(m13, sh8, this, object_id++);
+			do_box.assignTexture(t8.getID(), t8.getNormalID());
+			addObject(&do_box);
 
 			DrawableObject do_tree1 = DrawableObject(m11, sh6, this, object_id++);
 			do_tree1.move(glm::vec3(0.f, 0.f, -10.f));
@@ -641,6 +663,7 @@ void Scene::init()
 	getCamera()->registerObserver(*sh5);
 	getCamera()->registerObserver(*sh6);
 	getCamera()->registerObserver(*sh7);
+	getCamera()->registerObserver(*sh8);
 }
 
 void Scene::toggleFlashlight()

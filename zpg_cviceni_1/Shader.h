@@ -35,6 +35,7 @@
 #define ConstantObject 3			// solid color block without light calculations
 #define StandardObjectTextured 4	// solid color block without light calculations
 #define SkyBox 5					// solid color block without light calculations
+#define StandardObjectTexturedNormal 6
 
 class Shader : public Observer
 {

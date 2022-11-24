@@ -36,7 +36,8 @@ enum ModelName
 	Building = 7,
 	Zombie = 8,
 	Tree2 = 9,
-	Plain2 = 10
+	Plain2 = 10,
+	Box = 11
 };
 
 class Model
@@ -62,6 +63,7 @@ public:
 	void setSkyBox();
 	void setWithTexture();
 	void setObject();
+	void setObjectWithNormals();
 	int getName();
 	void render();
 };
