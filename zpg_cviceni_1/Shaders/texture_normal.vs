@@ -7,7 +7,6 @@ layout(location=3) in vec3 tg;
 
 out vec3 normal;
 out vec3 FragPos;
-out vec2 uv;
 
 out vec2 uvc;
 out vec3 vnc;
@@ -19,16 +18,23 @@ uniform mat4 projectionMatrix;
 
 void main ()
 {
+	// Převod z lokálního do globalního souřadného systému
 	FragPos = vec3(modelMatrix * vec4(pos, 1.0));
+
+	// Projekční matice - projekční plátno, na které kreslíme
+	// View matice - kamera
     gl_Position = projectionMatrix * viewMatrix * vec4 (FragPos, 1.0);
+
+	// Musíme toto přepočítat, aby se vytvoříla normála v globálním směru a nebyla jen v lokálním systému
+	// Transpose + inverse = přepočtení normály při neuniforním škálování
 	normal = mat3(transpose(inverse(modelMatrix))) * nor;
 	mat3 normalMat = transpose(inverse(mat3(modelMatrix)));
-
-	uv = uv_in;
 
 	// Gram Schmidt orthonormalization
 	vec3 _normal = normalize(nor);
     vec3 _tangent = normalize(tg);
+
+	// Dot product - součin vektorů, udává vychýlení dvou vektorů v rozmezí (-1, 1), kdy -1 = jsou opačně, 1 = jsou ve stejném směru, 0 = kolmé
     _tangent = normalize(_tangent - dot(_tangent, _normal) * _normal);
     vec3 _bitangent = cross(_normal, _tangent);
 

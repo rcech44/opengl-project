@@ -288,6 +288,7 @@ void Scene::init()
 
 			DrawableObject do_box = DrawableObject(m13, sh8, this, object_id++);
 			do_box.assignTexture(t8.getID(), t8.getNormalID());
+			do_box.move(glm::vec3(3,0.5,-3));
 			addObject(&do_box);
 
 			DrawableObject do_tree1 = DrawableObject(m11, sh6, this, object_id++);
