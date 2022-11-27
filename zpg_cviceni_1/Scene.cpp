@@ -213,11 +213,8 @@ void Scene::init()
 			Light light8 = Light(LightType::Point);
 
 			light3.setColor(glm::vec3(0.8, 0, 1));
-			light4.setColor(glm::vec3(1, 1, 1));
-			light5.setColor(glm::vec3(1, 1, 1));
 			light6.setColor(glm::vec3(1, 1, 0));
 			light7.setColor(glm::vec3(0, 0.8, 1));
-			light8.setColor(glm::vec3(1, 1, 1));
 			light3.setPosition(glm::vec3(-12.0, 2.0, -10.0));
 			light4.setPosition(glm::vec3(-3.0, -2.0, 0.0));
 			light6.setPosition(glm::vec3(-4.0, 2.0, -15.0));
@@ -321,7 +318,6 @@ void Scene::init()
 
 			DrawableObject do_ground = DrawableObject(m12, sh6, this, object_id++);
 			do_ground.assignTexture(t1->getID());
-			//do_ground.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 			addObject(&do_ground);
 
 			/*DrawableObject do_sun = DrawableObject(m2, sh2, this, object_id++);

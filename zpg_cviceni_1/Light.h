@@ -25,7 +25,7 @@ enum LightType {
 class Light
 {
 public:
-    glm::vec3 color;
+    glm::vec3 color{1, 1, 1};
     glm::vec3 position;
     glm::vec3 direction;
     int type;
