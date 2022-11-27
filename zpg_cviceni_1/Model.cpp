@@ -199,6 +199,7 @@ void Model::setObjectWithNormals()
 			}
 		}
 	}
+
 	//Vertex Array Object (VAO)
 	GLuint VBO = 0;
 	glGenBuffers(1, &VBO); // generate the VBO

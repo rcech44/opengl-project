@@ -184,39 +184,31 @@ void DrawableObject::render()
 
 glm::mat4 DrawableObject::transform()
 {
-	glm::mat4 t = glm::translate(glm::mat4{ 1.f }, translation);
-	t = glm::scale(t, size);
-	t = glm::rotate(t, rotation.x, { 1.f, 0.f, 0.f });
-	t = glm::rotate(t, rotation.y, { 0.f, 1.f, 0.f });
-	t = glm::rotate(t, rotation.z, { 0.f, 0.f, 1.f });
-	return t;
+	for (auto& t : transformations)
+	{
+		switch (t.getType())
+		{
+			case Translation:
+				this->last_position = glm::translate(last_position, t.getValues());
+				break;
+			case Rotation:
+				this->last_position = glm::rotate(last_position, t.getValues().x, { 1.f, 0.f, 0.f });
+				this->last_position = glm::rotate(last_position, t.getValues().y, { 0.f, 1.f, 0.f });
+				this->last_position = glm::rotate(last_position, t.getValues().z, { 0.f, 0.f, 1.f });
+				break;
+			case Scale:
+				this->last_position = glm::scale(last_position, t.getValues());
+				break;
+		}
+	}
+
+	transformations.clear();
+	return this->last_position;
 }
 
-void DrawableObject::rotate(glm::vec3 rot)
+void DrawableObject::addTransformation(glm::vec3 tf, int type)
 {
-	this->rotation = rot;
-}
-
-void DrawableObject::setPosition(glm::vec3 pos)
-{
-	this->translation = pos;
-}
-
-void DrawableObject::addRotation(glm::vec3 rot)
-{
-	/*if (auto_rotate_multiplier > 0.f) this->rotation += rot * auto_rotate_multiplier;
-	else if (auto_rotate_multiplier == 0.f) */
-	this->rotation += rot;
-}
-
-void DrawableObject::move(glm::vec3 difference)
-{
-	this->translation += difference;
-}
-
-void DrawableObject::scale(glm::vec3 scale)
-{
-	this->size = scale;
+	this->transformations.push_back(Transformation(tf, type));
 }
 
 void DrawableObject::setColor(glm::vec3 color)

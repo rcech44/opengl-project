@@ -27,15 +27,15 @@ void Scene::addObject(DrawableObject* obj)
 void Scene::placeNewObject(glm::vec3 pos, int object_name)
 {
  	DrawableObject do_new = DrawableObject(models.find(object_name)->second, shaders.find(StandardObjectTextured)->second, this, this->object_id++);
-	do_new.move(pos);
+	do_new.addTransformation(pos, Translation);
 	switch (object_name)
 	{
 		case Tree2:
-			do_new.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_new.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_new.assignTexture(textures.find(Tree2)->second->getID());
 			break;
 		case Zombie:
-			do_new.scale(glm::vec3(1.3f, 1.3f, 1.3f));
+			do_new.addTransformation(glm::vec3(1.3f, 1.3f, 1.3f), Scale);
 			do_new.assignTexture(textures.find(Zombie)->second->getID());
 			break;
 	}
@@ -247,57 +247,75 @@ void Scene::init()
 				{
 					DrawableObject do_temp = DrawableObject(m2, sh2, this, object_id++);
 					do_temp.setColor(l.color);
-					do_temp.move(l.position);
-					do_temp.scale(glm::vec3(0.4, 0.4, 0.4));
+					do_temp.addTransformation(l.position, Translation);
+					do_temp.addTransformation(glm::vec3(0.4, 0.4, 0.4), Scale);
 					addObject(&do_temp);
 				}
 			}
 
 			DrawableObject do_box = DrawableObject(m13, sh8, this, object_id++);
 			do_box.assignTexture(t8->getID(), t8->getNormalID());
-			do_box.move(glm::vec3(3,0.5,-3));
+			do_box.addTransformation(glm::vec3(3, 0.5, -3), Translation);
 			addObject(&do_box);
 
+			DrawableObject do_box2 = DrawableObject(m13, sh8, this, object_id++);
+			do_box2.assignTexture(t8->getID(), t8->getNormalID());
+			do_box2.addTransformation(glm::vec3(1.9, 0.5, -3.8), Translation);
+			do_box2.addTransformation(glm::vec3(0, glm::radians(40.f), 0), Rotation);
+			addObject(&do_box2);
+
+			DrawableObject do_box3 = DrawableObject(m13, sh8, this, object_id++);
+			do_box3.assignTexture(t8->getID(), t8->getNormalID());
+			do_box3.addTransformation(glm::vec3(3, 0.5, -4.5), Translation);
+			do_box3.addTransformation(glm::vec3(0 , glm::radians(60.f), 0), Rotation);
+			addObject(&do_box3);
+
+			DrawableObject do_box4 = DrawableObject(m13, sh8, this, object_id++);
+			do_box4.assignTexture(t8->getID(), t8->getNormalID());
+			do_box4.addTransformation(glm::vec3(2.7, 1.55, -4.1), Translation);
+			do_box4.addTransformation(glm::vec3(0, glm::radians(60.f), 0), Rotation);
+			addObject(&do_box4);
+
 			DrawableObject do_tree1 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree1.move(glm::vec3(0.f, 0.f, -10.f));
-			do_tree1.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_tree1.addTransformation(glm::vec3(0.f, 0.f, -10.f), Translation);
+			do_tree1.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_tree1.assignTexture(t7->getID());
 			addObject(&do_tree1);
 
 			DrawableObject do_tree2 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree2.move(glm::vec3(0.f, 0.f, -25.f));
-			do_tree2.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_tree2.addTransformation(glm::vec3(0.f, 0.f, -25.f), Translation);
+			do_tree2.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_tree2.assignTexture(t7->getID());
 			addObject(&do_tree2);
 
 			DrawableObject do_tree3 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree3.move(glm::vec3(-30.f, 0.f, -20.f));
-			do_tree3.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_tree3.addTransformation(glm::vec3(-30.f, 0.f, -20.f), Translation);
+			do_tree3.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_tree3.assignTexture(t7->getID());
 			addObject(&do_tree3);
 
 			DrawableObject do_tree4 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree4.move(glm::vec3(-20.f, 0.f, -5.f));
-			do_tree4.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_tree4.addTransformation(glm::vec3(-20.f, 0.f, -5.f), Translation);
+			do_tree4.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_tree4.assignTexture(t7->getID());
 			addObject(&do_tree4);
 
 			DrawableObject do_tree5 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree5.move(glm::vec3(-5.f, 0.f, 2.f));
-			do_tree5.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+			do_tree5.addTransformation(glm::vec3(-5.f, 0.f, 2.f), Translation);
+			do_tree5.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
 			do_tree5.assignTexture(t7->getID());
 			addObject(&do_tree5);
 
 			DrawableObject do_building = DrawableObject(m9, sh6, this, object_id++);
-			do_building.scale(glm::vec3(2.0f, 2.0f, 2.0f));
-			do_building.move(glm::vec3(-20.0f, 0.0f, -30.0f));
-			do_building.rotate(glm::vec3(0.0f, 10.0f, 0.0f));
+			do_building.addTransformation(glm::vec3(-20.0f, 0.0f, -30.0f), Translation);
+			do_building.addTransformation(glm::vec3(2.0f, 2.0f, 2.0f), Scale);
+			do_building.addTransformation(glm::vec3(0.0f, glm::radians(33.f), 0.0f), Rotation);
 			do_building.assignTexture(t5->getID());
 			addObject(&do_building);
 
 			DrawableObject do_zombie = DrawableObject(m10, sh6, this, object_id++);
-			do_zombie.move(glm::vec3(-2.f, 0.f, -7.f));
-			do_zombie.scale(glm::vec3(1.3f, 1.3f, 1.3f));
+			do_zombie.addTransformation(glm::vec3(-2.f, 0.f, -7.f), Translation);
+			do_zombie.addTransformation(glm::vec3(1.3f, 1.3f, 1.3f), Scale);
 			do_zombie.assignTexture(t6->getID());
 			addObject(&do_zombie);
 
@@ -306,11 +324,11 @@ void Scene::init()
 			//do_ground.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 			addObject(&do_ground);
 
-			DrawableObject do_sun = DrawableObject(m2, sh2, this, object_id++);
+			/*DrawableObject do_sun = DrawableObject(m2, sh2, this, object_id++);
 			do_sun.setColor(glm::vec3(0.7f, 0.7f, 0.1f));
 			do_sun.move(glm::vec3(0.f, 50.f, 0.f));
 			do_sun.scale(glm::vec3(5.0f, 5.0f, 5.0f));
-			addObject(&do_sun);
+			addObject(&do_sun);*/
 
 			DrawableObject do_skybox = DrawableObject(m8, sh7, this, object_id++);
 			do_skybox.assignTexture(t4->getID());
@@ -525,102 +543,102 @@ void Scene::init()
 		//	addSkybox(&do_skybox);
 		//	break;	
 		//}
-		case 1:
-		{
-			Light light3 = Light(LightType::Point);
-			Light light4 = Light(LightType::SpotlightCamera);
-			Light light5 = Light(LightType::Directional);
+		//case 1:
+		//{
+		//	Light light3 = Light(LightType::Point);
+		//	Light light4 = Light(LightType::SpotlightCamera);
+		//	Light light5 = Light(LightType::Directional);
 
-			light3.setColor(glm::vec3(1,1,1));
-			light4.setColor(glm::vec3(1,1,1));
-			light5.setColor(glm::vec3(1,1,1));
-			light3.setPosition(glm::vec3(0.0,1.0,0.0));
-			light4.setPosition(glm::vec3(-3.0,-2.0,0.0));
-			light4.setDirection(glm::vec3(0.0,4.0,0.0));
-			light4.setCutoff(glm::cos(glm::radians(30.f)));
-			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
-			light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
-			light5.setStrength(0.3f);
+		//	light3.setColor(glm::vec3(1,1,1));
+		//	light4.setColor(glm::vec3(1,1,1));
+		//	light5.setColor(glm::vec3(1,1,1));
+		//	light3.setPosition(glm::vec3(0.0,1.0,0.0));
+		//	light4.setPosition(glm::vec3(-3.0,-2.0,0.0));
+		//	light4.setDirection(glm::vec3(0.0,4.0,0.0));
+		//	light4.setCutoff(glm::cos(glm::radians(30.f)));
+		//	light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
+		//	light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
+		//	light5.setStrength(0.3f);
 
-			addLight(&light3);
-			addLight(&light4);
-			addLight(&light5);
+		//	addLight(&light3);
+		//	addLight(&light4);
+		//	addLight(&light5);
 
-			// Render all light sources as light spheres
-			for (Light &l : lights)
-			{
-				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
-				{
-					DrawableObject do_temp = DrawableObject(m2, sh2, this, object_id++);
-					do_temp.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-					do_temp.move(l.position);
-					do_temp.scale(glm::vec3(0.4, 0.4, 0.4));
-					addObject(&do_temp);
-				}
-			}
+		//	// Render all light sources as light spheres
+		//	for (Light &l : lights)
+		//	{
+		//		if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
+		//		{
+		//			DrawableObject do_temp = DrawableObject(m2, sh2, this, object_id++);
+		//			do_temp.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+		//			do_temp.move(l.position);
+		//			do_temp.scale(glm::vec3(0.4, 0.4, 0.4));
+		//			addObject(&do_temp);
+		//		}
+		//	}
 
-			DrawableObject do1 = DrawableObject(m2, sh1, this, object_id++);
-			DrawableObject do2 = DrawableObject(m2, sh1, this, object_id++);
-			DrawableObject do3 = DrawableObject(m2, sh1, this, object_id++);
-			DrawableObject do4 = DrawableObject(m2, sh1, this, object_id++);
-			//DrawableObject do5 = DrawableObject(m2, sh2);
-			DrawableObject do6 = DrawableObject(m4, sh1, this, object_id++);
-			DrawableObject do7 = DrawableObject(m2, sh2, this, object_id++);
+		//	DrawableObject do1 = DrawableObject(m2, sh1, this, object_id++);
+		//	DrawableObject do2 = DrawableObject(m2, sh1, this, object_id++);
+		//	DrawableObject do3 = DrawableObject(m2, sh1, this, object_id++);
+		//	DrawableObject do4 = DrawableObject(m2, sh1, this, object_id++);
+		//	//DrawableObject do5 = DrawableObject(m2, sh2);
+		//	DrawableObject do6 = DrawableObject(m4, sh1, this, object_id++);
+		//	DrawableObject do7 = DrawableObject(m2, sh2, this, object_id++);
 
-			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do3.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do4.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
-			do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
+		//	do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+		//	do2.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+		//	do3.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+		//	do4.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+		//	do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
+		//	do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
 
-			do1.move(glm::vec3(-10.0f, 1.0f, 0.0f));
-			do2.move(glm::vec3(0.0f, 1.0f, -3.0f));
-			do3.move(glm::vec3(3.0f, 1.0f, 0.0f));
-			do4.move(glm::vec3(0.0f, 1.0f, 3.0f));
-			//do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
-			//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
-			do6.scale(glm::vec3(200.0f, 200.0f, 200.0f));
-			do6.move(glm::vec3(0.0f, -6.0f, 0.0f));
-			do6.scale(glm::vec3(150.0f, 150.0f, 150.0f));
-			do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+		//	do1.move(glm::vec3(-10.0f, 1.0f, 0.0f));
+		//	do2.move(glm::vec3(0.0f, 1.0f, -3.0f));
+		//	do3.move(glm::vec3(3.0f, 1.0f, 0.0f));
+		//	do4.move(glm::vec3(0.0f, 1.0f, 3.0f));
+		//	//do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
+		//	//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
+		//	do6.scale(glm::vec3(200.0f, 200.0f, 200.0f));
+		//	do6.move(glm::vec3(0.0f, -6.0f, 0.0f));
+		//	do6.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+		//	do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 
-			addObject(&do1);
-			addObject(&do2);
-			addObject(&do3);
-			addObject(&do4);
-			addObject(&do6);
-			addObject(&do7);
+		//	addObject(&do1);
+		//	addObject(&do2);
+		//	addObject(&do3);
+		//	addObject(&do4);
+		//	addObject(&do6);
+		//	addObject(&do7);
 
-			break;
-		}
-		case 2:
-		{
-			DrawableObject do1 = DrawableObject(m2, sh1, this, object_id++);
-			DrawableObject do5 = DrawableObject(m2, sh2, this, object_id++);
-			DrawableObject do6 = DrawableObject(m4, sh1, this, object_id++);
-			DrawableObject do7 = DrawableObject(m2, sh3, this, object_id++);
+		//	break;
+		//}
+		//case 2:
+		//{
+		//	DrawableObject do1 = DrawableObject(m2, sh1, this, object_id++);
+		//	DrawableObject do5 = DrawableObject(m2, sh2, this, object_id++);
+		//	DrawableObject do6 = DrawableObject(m4, sh1, this, object_id++);
+		//	DrawableObject do7 = DrawableObject(m2, sh3, this, object_id++);
 
-			do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
-			do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-			do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
-			do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
+		//	do1.setColor(glm::vec3(0.0f, 0.5f, 0.0f));
+		//	do5.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+		//	do6.setColor(glm::vec3(0.6f, 0.3f, 0.0f));
+		//	do7.setColor(glm::vec3(0.2f, 0.2f, 0.7f));
 
-			do1.move(glm::vec3(-3.0f, 1.0f, 0.0f));
-			do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
-			//do5.move(glm::vec3(0.0f, 3.f, 0.f));
-			//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
-			do6.scale(glm::vec3(200.0f, 200.0f, 200.0f));
-			do6.move(glm::vec3(0.0f, -6.0f, 0.0f));
-			do6.scale(glm::vec3(150.0f, 150.0f, 150.0f));
-			do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+		//	do1.move(glm::vec3(-3.0f, 1.0f, 0.0f));
+		//	do5.scale(glm::vec3(0.4f, 0.4f, 0.4f));
+		//	//do5.move(glm::vec3(0.0f, 3.f, 0.f));
+		//	//do6.move(glm::vec3(0.0f, 0.0f, 0.0f));
+		//	do6.scale(glm::vec3(200.0f, 200.0f, 200.0f));
+		//	do6.move(glm::vec3(0.0f, -6.0f, 0.0f));
+		//	do6.scale(glm::vec3(150.0f, 150.0f, 150.0f));
+		//	do7.scale(glm::vec3(150.0f, 150.0f, 150.0f));
 
-			addObject(&do1);
-			addObject(&do5);
-			addObject(&do6);
-			addObject(&do7);
-			break;
-		}
+		//	addObject(&do1);
+		//	addObject(&do5);
+		//	addObject(&do6);
+		//	addObject(&do7);
+		//	break;
+		//}
 	}
 
 	// Register observers
