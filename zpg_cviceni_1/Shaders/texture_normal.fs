@@ -109,7 +109,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
     // Vypocet smeru odrazu
     vec3 reflectionDir = reflect(-lightDir, _normal);
 
-    // toto nam vrati cosinus uhlu mezi dvema danymi vektory a max zajisti, ze neni nulovy
+    // toto nam vrati cosinus uhlu mezi dvema danymi vektory a max zajisti, ze neni zaporny
     float dot_product = dot(lightDir,  _normal);
     vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);

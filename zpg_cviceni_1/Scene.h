@@ -8,6 +8,7 @@
 
 //Include others
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include <ctime>
 
@@ -24,31 +25,29 @@ private:
 	std::vector<DrawableObject> objects;
 	std::vector<DrawableObject> lightObjects;
 	std::vector<DrawableObject> skyboxes;
-	std::vector<Texture> textures;
-	std::vector<Shader*> shaders;
-	std::vector<Model*> models;
+	std::map<int, Texture*> textures;
+	std::map<int, Shader*> shaders;
+	std::map<int, Model*> models;
 	bool flashlight = true;
 	int object_id = 0;
 
 public:
 	Scene() {};
+
 	void addObject(DrawableObject* obj);
-	void placeNewObject(glm::vec3 pos, int object_name);
-	void addLightObject(DrawableObject* obj);
 	void addSkybox(DrawableObject* obj);
-	void addShader(Shader* sh);
-	void addModel(Model* m);
-	Model* getModel(int index);
-	Shader* getShader(int index);
+	void addShader(Shader* sh, int id);
+	void addModel(Model* m, int id);
 	void addLight(Light* l);
-	void addTexture(Texture* t);
+	void addTexture(Texture* t, int id);
+	void placeNewObject(glm::vec3 pos, int object_name);
+
 	Camera* getCamera();
 	std::vector<Light>* getLights();
+	bool flashlightStatus();
+
 	void update();
 	void init();
 	void toggleFlashlight();
-	bool flashlightStatus();
-
-	float orbit = 1.f;
 };
 

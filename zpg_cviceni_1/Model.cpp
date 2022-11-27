@@ -1,6 +1,7 @@
 #include "Model.h"
 #include <stdio.h>
 
+// For loading objects from header file
 Model::Model(int name, int model_type, const float* p, size_t size, int type, int number_of_objects, int coords_size, int color_size)
 {
 	this->model_name = name;
@@ -9,6 +10,17 @@ Model::Model(int name, int model_type, const float* p, size_t size, int type, in
 	this->points = p;
 	this->points_size = size;
 	this->number_of_objects = number_of_objects;
+	this->coords_size = coords_size;
+	this->color_size = color_size;
+}
+
+// For loading objects from .obj file
+Model::Model(int name, int model_type, const char* path, int type, int coords_size, int color_size)
+{
+	this->model_name = name;
+	this->model_type = model_type;
+	this->type = type;
+	this->path = path;
 	this->coords_size = coords_size;
 	this->color_size = color_size;
 }
@@ -45,16 +57,6 @@ void Model::set()
 	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size) * sizeof(float), (void*)(coords_size * sizeof(float)));
 
 	printf("[OBJECTS] Created VAO and VBO for model\n");
-}
-
-Model::Model(int name, int model_type, const char* path, int type, int coords_size, int color_size)
-{
-	this->model_name = name;
-	this->model_type = model_type;
-	this->type = type;
-	this->path = path;
-	this->coords_size = coords_size;
-	this->color_size = color_size;
 }
 
 void Model::setSkyBox()

@@ -1,5 +1,10 @@
 #include "Texture.h"
 
+Texture::Texture(int type)
+{
+	this->type = type;
+}
+
 void Texture::assignTexture(const char* path)
 {
 	switch (this->type)

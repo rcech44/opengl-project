@@ -14,27 +14,21 @@ DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene, int id)
 void DrawableObject::render()
 {
 	std::vector<Light>* lights = scene->getLights();
-	glm::vec3 viewPos = scene->getCamera()->getPosition();
-	glm::vec3 viewDirection = scene->getCamera()->getTarget();
+	glm::vec3 camera_position = scene->getCamera()->getPosition();
+	glm::vec3 camera_direction = scene->getCamera()->getTarget();
 
 	this->shader->useProgram();
-	int t;
 
 	switch (this->shader->getShaderType())
 	{
-		// Render objects that act like light source - they have constant color
 		case LightSource:
-			if (this->light != nullptr)
-			{
-				setPosition(glm::vec3(-glm::cos(glm::radians(this->scene->orbit)) * 30, this->light->position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
-			}
 			this->shader->vec3Insert(this->color, "objectColor");
 			break;
 
 		// Render all objects with light logic
 		case StandardObject:
 			this->shader->intInsert(lights->size(), "lightCount");
-			this->shader->vec3Insert(viewPos, "viewPos");
+			this->shader->vec3Insert(camera_position, "viewPos");
 			this->shader->vec3Insert(this->color, "objectColor");
 			for (size_t i = 0; i < lights->size(); i++)
 			{
@@ -46,7 +40,13 @@ void DrawableObject::render()
 				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
 				std::string l_strength = "lights[" + std::to_string(i) + "].strength";
 
-				// Process all light types
+				this->shader->intInsert(lights->at(i).type, l_type.c_str());
+				this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+				this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+				this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+
+				// Process all light types 
 				switch (lights->at(i).type)
 				{
 					case LightType::SpotlightCamera:
@@ -55,41 +55,18 @@ void DrawableObject::render()
 						if (scene->flashlightStatus())
 						{
 							this->shader->intInsert(1, "flashlightEnabled");
-							this->shader->vec3Insert(viewPos, l_pos.c_str());
-							this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-							this->shader->intInsert(lights->at(i).type, l_type.c_str());
+							this->shader->vec3Insert(camera_position, l_pos.c_str());
 							this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
 							this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
-							this->shader->vec3Insert(viewDirection, l_dir.c_str());
-							this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+							this->shader->vec3Insert(camera_direction, l_dir.c_str());
 						}
 						else this->shader->intInsert(0, "flashlightEnabled");
-						break;
-					case LightType::PointOrbital:
-						lights->at(i).setPosition(glm::vec3( -glm::cos(glm::radians(this->scene->orbit)) * 30, lights->at(i).position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
-						this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-						this->shader->intInsert(LightType::Point, l_type.c_str());
-						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-						this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
-						break;
-					default:
-						this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-						this->shader->intInsert(lights->at(i).type, l_type.c_str());
-						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-						this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
 						break;
 				}
 			}
 			break;
 
-		// Render all objects that have constant color
 		case ConstantObject:
-			//this->shader->vec3Insert(this->color, "objectColor");
-			//this->shader->intInsert(this->texture, "textureUnitID");
 			break;
 
 		case SkyBox:
@@ -109,7 +86,7 @@ void DrawableObject::render()
 			glBindTexture(GL_TEXTURE_2D, this->texture);
 			this->shader->intInsert(0, "textureUnitID");
 			this->shader->intInsert(lights->size(), "lightCount");
-			this->shader->vec3Insert(viewPos, "viewPos");
+			this->shader->vec3Insert(camera_position, "viewPos");
 			//this->shader->vec3Insert(this->color, "objectColor");
 			for (size_t i = 0; i < lights->size(); i++)
 			{
@@ -121,42 +98,28 @@ void DrawableObject::render()
 				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
 				std::string l_strength = "lights[" + std::to_string(i) + "].strength";
 
+				this->shader->intInsert(lights->at(i).type, l_type.c_str());
+				this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+				this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+				this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+
 				// Process all light types 
 				switch (lights->at(i).type)
 				{
-				case LightType::SpotlightCamera:
+					case LightType::SpotlightCamera:
 
-					// Check if flashlight is turned on or off
-					if (scene->flashlightStatus())
-					{
-						this->shader->intInsert(1, "flashlightEnabled");
-						this->shader->vec3Insert(viewPos, l_pos.c_str());
-						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-						this->shader->intInsert(lights->at(i).type, l_type.c_str());
-						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-						this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
-						this->shader->vec3Insert(viewDirection, l_dir.c_str());
-						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
-					}
-					else this->shader->intInsert(0, "flashlightEnabled");
-					break;
-				case LightType::PointOrbital:
-					lights->at(i).setPosition(glm::vec3(-glm::cos(glm::radians(this->scene->orbit)) * 30, lights->at(i).position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
-					this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-					this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-					this->shader->intInsert(LightType::Point, l_type.c_str());
-					this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-					this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-					this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
-					break;
-				default:
-					this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-					this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-					this->shader->intInsert(lights->at(i).type, l_type.c_str());
-					this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-					this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-					this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
-					break;
+						// Check if flashlight is turned on or off
+						if (scene->flashlightStatus())
+						{
+							this->shader->intInsert(1, "flashlightEnabled");
+							this->shader->vec3Insert(camera_position, l_pos.c_str());
+							this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+							this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
+							this->shader->vec3Insert(camera_direction, l_dir.c_str());
+						}
+						else this->shader->intInsert(0, "flashlightEnabled");
+						break;
 				}
 			}
 			break;
@@ -171,7 +134,7 @@ void DrawableObject::render()
 			this->shader->intInsert(1, "textureUnitID_normal");
 
 			this->shader->intInsert(lights->size(), "lightCount");
-			this->shader->vec3Insert(viewPos, "viewPos");
+			this->shader->vec3Insert(camera_position, "viewPos");
 			//this->shader->vec3Insert(this->color, "objectColor");
 			for (size_t i = 0; i < lights->size(); i++)
 			{
@@ -183,6 +146,12 @@ void DrawableObject::render()
 				std::string l_dir = "lights[" + std::to_string(i) + "].direction";
 				std::string l_strength = "lights[" + std::to_string(i) + "].strength";
 
+				this->shader->intInsert(lights->at(i).type, l_type.c_str());
+				this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
+				this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
+				this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
+				this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+
 				// Process all light types 
 				switch (lights->at(i).type)
 				{
@@ -192,43 +161,19 @@ void DrawableObject::render()
 					if (scene->flashlightStatus())
 					{
 						this->shader->intInsert(1, "flashlightEnabled");
-						this->shader->vec3Insert(viewPos, l_pos.c_str());
-						this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-						this->shader->intInsert(lights->at(i).type, l_type.c_str());
+						this->shader->vec3Insert(camera_position, l_pos.c_str());
 						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
 						this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
-						this->shader->vec3Insert(viewDirection, l_dir.c_str());
-						this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
+						this->shader->vec3Insert(camera_direction, l_dir.c_str());
 					}
 					else this->shader->intInsert(0, "flashlightEnabled");
-					break;
-				case LightType::PointOrbital:
-					lights->at(i).setPosition(glm::vec3(-glm::cos(glm::radians(this->scene->orbit)) * 30, lights->at(i).position.y, glm::sin(glm::radians(this->scene->orbit)) * 30));
-					this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-					this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-					this->shader->intInsert(LightType::Point, l_type.c_str());
-					this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-					this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-					this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
-					break;
-				default:
-					this->shader->vec3Insert(lights->at(i).position, l_pos.c_str());
-					this->shader->vec3Insert(lights->at(i).color, l_color.c_str());
-					this->shader->intInsert(lights->at(i).type, l_type.c_str());
-					this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
-					this->shader->vec3Insert(lights->at(i).direction, l_dir.c_str());
-					this->shader->floatInsert(lights->at(i).strength, l_strength.c_str());
 					break;
 				}
 			}
 			break;
 	}
 
-	if (this->shader->getShaderType() == SkyBox)
-	{
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
-	}
-	else
+	if (this->shader->getShaderType() != SkyBox)
 	{
 		this->shader->applyCamera();
 		this->shader->matrixInsert(transform(), TransformMatrix);
@@ -274,19 +219,9 @@ void DrawableObject::scale(glm::vec3 scale)
 	this->size = scale;
 }
 
-void DrawableObject::setAutoRotateSettings(float multiplier)
-{
-	this->auto_rotate_multiplier = multiplier;
-}
-
 void DrawableObject::setColor(glm::vec3 color)
 {
 	this->color = color;
-}
-
-void DrawableObject::assignLight(Light& l)
-{
-	this->light = &l;
 }
 
 void DrawableObject::assignTexture(int t)

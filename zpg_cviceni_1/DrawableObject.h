@@ -39,10 +39,6 @@ private:
 	// optional
 	int texture = -1;
 	int normal = -1;
-	Light* light = nullptr;
-
-	// other properties - unused
-	float auto_rotate_multiplier = -1.f;
 
 public:
 	DrawableObject(Model* m, Shader* s, Scene* scene, int id);
@@ -54,9 +50,7 @@ public:
 	void addRotation(glm::vec3 rot);
 	void move(glm::vec3 difference);
 	void scale(glm::vec3 scale);
-	void setAutoRotateSettings(float multiplier);
 	void setColor(glm::vec3 color);
-	void assignLight(Light& l);
 	void assignTexture(int t);
 	void assignTexture(int t, int n);
 	int getID();
