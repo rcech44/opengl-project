@@ -39,5 +39,6 @@ public:
 	glm::vec3 getDirection();
 	double getX();
 	double getY();
+	void switchEverMoved();
 };
 

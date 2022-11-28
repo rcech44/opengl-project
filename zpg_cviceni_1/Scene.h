@@ -40,7 +40,7 @@ public:
 	void addModel(Model* m, int id);
 	void addLight(Light* l);
 	void addTexture(Texture* t, int id);
-	void placeNewObject(glm::vec3 pos, int object_name);
+	void placeNewObject(glm::vec3 pos, int object_name, int shader);
 
 	Camera* getCamera();
 	std::vector<Light>* getLights();

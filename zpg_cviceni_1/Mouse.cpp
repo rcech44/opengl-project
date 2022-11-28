@@ -68,3 +68,8 @@ double Mouse::getY()
 {
 	return this->y;
 }
+
+void Mouse::switchEverMoved()
+{
+	this->ever_moved = false;
+}

@@ -4,7 +4,7 @@
 Camera::Camera()
 {
 	// Initial look-at - eye (position) + center (direction) + up ("roll")
-	camera = glm::lookAt(glm::vec3(0.0f, 2.0, 4.0f), glm::vec3(0.0, 0.0, -1.0), glm::vec3(1.0, 1.0, 0.0));
+	camera = glm::lookAt(glm::vec3(0.0f, 2.0, 4.0f), glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0));
 }
 
 void Camera::setPosition(glm::vec3 position)

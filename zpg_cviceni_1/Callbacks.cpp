@@ -59,6 +59,16 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 			scene.toggleFlashlight();
 			break;
 
+		case GLFW_KEY_Q:
+			if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+			{
+				mouse.switchEverMoved();
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			}
+			else
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			break;
+
 		default:
 			//printf("Pressed key: [%d,%d,%d,%d] \n", key, scancode, action, mods);
 			break;
@@ -88,16 +98,18 @@ void Application::window_size_callback(GLFWwindow* window, int width, int height
 // Callback when mouse moved
 void Application::cursor_callback(GLFWwindow* window, double x, double y)
 {
-	mouse.calculatePosition(x, y);
-	mouse.calculateDirection();
-	mouse.apply();
-	//printf("Cursor location changed: %f, %f \n", x, y);
+	if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+	{
+		mouse.calculatePosition(x, y);
+		mouse.calculateDirection();
+		mouse.apply();
+	}
 }
 
 // Callback when mouse button was pressed
 void Application::button_callback(GLFWwindow* window, int button, int action, int mode)
 {
-	if (GLFW_PRESS == action)
+	if ((GLFW_PRESS == action) && (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL))
 	{
 		// Get frame buffer size
 		int width, height;
@@ -108,8 +120,10 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 		GLuint index;
 
 		// Calculate center of screen
-		int x = width / 2;
-		int y = height / 2;
+		double x;
+		double y;
+		glfwGetCursorPos(window, &x, &y);
+		y = height - y;
 
 		// Read pixels from frame buffer
 		glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
@@ -132,8 +146,10 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 
 		// On mouse click place new objects
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
-			this->scene.placeNewObject(pos, Tree2);
+			this->scene.placeNewObject(pos, Tree2, StandardObjectTextured);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
-			this->scene.placeNewObject(pos, Zombie);
+			this->scene.placeNewObject(pos, Zombie, StandardObjectTextured);
+		if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+			this->scene.placeNewObject(pos, Sphere, ConstantObject);
 	}
 }

@@ -24,9 +24,9 @@ void Scene::addObject(DrawableObject* obj)
 	printf("[SCENE] Added one object %d to scene. Current objects: %d\n", obj->getID(), objects.size());
 }
 
-void Scene::placeNewObject(glm::vec3 pos, int object_name)
+void Scene::placeNewObject(glm::vec3 pos, int object_name, int shader)
 {
- 	DrawableObject do_new = DrawableObject(models.find(object_name)->second, shaders.find(StandardObjectTextured)->second, this, this->object_id++);
+ 	DrawableObject do_new = DrawableObject(models.find(object_name)->second, shaders.find(shader)->second, this, this->object_id++);
 	do_new.addTransformation(pos, Translation);
 	switch (object_name)
 	{
@@ -37,6 +37,21 @@ void Scene::placeNewObject(glm::vec3 pos, int object_name)
 		case Zombie:
 			do_new.addTransformation(glm::vec3(1.3f, 1.3f, 1.3f), Scale);
 			do_new.assignTexture(textures.find(Zombie)->second->getID());
+			break;
+		case Sphere:
+			double r = rand() / (RAND_MAX + 1.);
+			double g = rand() / (RAND_MAX + 1.);
+			double b = rand() / (RAND_MAX + 1.);
+			do_new.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
+			do_new.addTransformation(glm::vec3(0.f, 1.f, 0.f), Translation);
+			do_new.setColor(glm::vec3(r, g, b));
+
+			Light do_light = Light(LightType::Point);
+			do_light.setColor(glm::vec3(r, g, b)); 
+			do_light.setPosition(glm::vec3(pos.x, pos.y + 1, pos.z));
+			do_light.setStrength(1.f);
+			addLight(&do_light);
+
 			break;
 	}
 	
@@ -105,7 +120,7 @@ void Scene::init()
 	Shader* sh8 = new Shader("Shaders/texture_normal.fs", "Shaders/texture_normal.vs", StandardObjectTexturedNormal);	// standard shader with textures and normals
 	Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);											// constant color shader
 	Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);										// constant color shader
-	Shader* sh5 = new Shader("Shaders/fs1_texture.fs", "Shaders/vs1_texture.vs", ConstantObject);						// object with constant color shader with texture
+	Shader* sh5 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);						// object with constant color shader with texture
 	Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader without light check
 	Shader* sh7 = new Shader("Shaders/texture_skybox.fs", "Shaders/texture_skybox.vs", SkyBox);							// standard shader without light check
 
@@ -319,12 +334,6 @@ void Scene::init()
 			DrawableObject do_ground = DrawableObject(m12, sh6, this, object_id++);
 			do_ground.assignTexture(t1->getID());
 			addObject(&do_ground);
-
-			/*DrawableObject do_sun = DrawableObject(m2, sh2, this, object_id++);
-			do_sun.setColor(glm::vec3(0.7f, 0.7f, 0.1f));
-			do_sun.move(glm::vec3(0.f, 50.f, 0.f));
-			do_sun.scale(glm::vec3(5.0f, 5.0f, 5.0f));
-			addObject(&do_sun);*/
 
 			DrawableObject do_skybox = DrawableObject(m8, sh7, this, object_id++);
 			do_skybox.assignTexture(t4->getID());
