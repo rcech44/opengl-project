@@ -18,7 +18,7 @@
 class Mouse : public Observable
 {
 private:
-	float yaw = -90.0f;				// angle X
+	float yaw = -90.0f;				// angle X, to make sure we are pointing towards negative Z axis
 	float pitch = 0.0f;				// angle Y
 	float sensitivity = 0.4f;
 	double x = 0;

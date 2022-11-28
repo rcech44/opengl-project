@@ -65,6 +65,7 @@ public:
 	void setObject();
 	void setObjectWithNormals();
 	int getName();
+	void createVAOVBO();
 	void render();
 };
 

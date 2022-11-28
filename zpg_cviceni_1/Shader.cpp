@@ -7,16 +7,13 @@
 Shader::Shader(const char** fs, const char** vs, int type)
 {
 	// Replaced by shader loading from file
-
-	/*this->fragment_shader_code = fs;
-	this->vertex_shader_code = vs;
-	this->shader_type = type;*/
 }
 
 Shader::Shader(const char* fs_loc, const char* vs_loc, int type)
 {
 	// https://stackoverflow.com/questions/18398167/how-to-copy-a-txt-file-to-a-char-array-in-c
 
+	// Open two file streams (vertex, fragment)
 	std::ifstream raw_fs(fs_loc);
 	if (!raw_fs)
 	{
@@ -30,30 +27,36 @@ Shader::Shader(const char* fs_loc, const char* vs_loc, int type)
 		exit(-1);
 	}
 
+	// Iterate through file streams by char until the EOF and save it
 	std::string dumped_fs((std::istreambuf_iterator<char>(raw_fs)), std::istreambuf_iterator<char>());
 	this->fragment_shader_code = dumped_fs;
 
 	std::string dumped_vs((std::istreambuf_iterator<char>(raw_vs)), std::istreambuf_iterator<char>());
 	this->vertex_shader_code = dumped_vs;
 
+	// Save the type of shader (example - ConstantObject)
 	this->shader_type = type;
 }
 
 void Shader::compileShaders()
 {
+	// Compile shaders
 	glCompileShader(this->fragment_shader_id);
 	glCompileShader(this->vertex_shader_id);
 }
 
 void Shader::createProgram()
 {
+	// Create new shader program and pass both fragment and vertex shaders
 	GLuint prog = glCreateProgram();
 	glAttachShader(prog, fragment_shader_id);
 	glAttachShader(prog, vertex_shader_id);
 
+	// Link the program
 	glLinkProgram(prog);
 	this->program = prog;
 
+	// Check compilation and linkage status
 	GLint status;
 	glGetProgramiv(prog, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE)
@@ -73,11 +76,11 @@ void Shader::createShaders()
 	const char* fs = this->fragment_shader_code.c_str();
 	const char* vs = this->vertex_shader_code.c_str();
 
-	// fragment shader
+	// Create new fragment shader and pass code as source
 	this->fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(this->fragment_shader_id, 1, &fs, NULL);
 
-	// vertex shader
+	// Same for vertex shader...
 	this->vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(this->vertex_shader_id, 1, &vs, NULL);
 }
@@ -91,30 +94,30 @@ void Shader::set()
 
 void Shader::matrixInsert(glm::mat4 M, const char* variable)
 {
-	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
-	glUniformMatrix4fv(idModelTransform, 1, GL_FALSE, &M[0][0]);
+	GLint id_uniform = glGetUniformLocation(this->program, variable);
+	if (id_uniform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
+	glUniformMatrix4fv(id_uniform, 1, GL_FALSE, &M[0][0]);
 }
 
 void Shader::vec3Insert(glm::vec3 &value, const char* variable)
 {
-	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
-	glUniform3fv(idModelTransform, 1, &value[0]);
+	GLint id_uniform = glGetUniformLocation(this->program, variable);
+	if (id_uniform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
+	glUniform3fv(id_uniform, 1, &value[0]);
 }
 
 void Shader::intInsert(int value, const char* variable)
 {
-	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
-	glUniform1i(idModelTransform, value);
+	GLint id_uniform = glGetUniformLocation(this->program, variable);
+	if (id_uniform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
+	glUniform1i(id_uniform, value);
 }
 
 void Shader::floatInsert(float value, const char* variable)
 {
-	GLint idModelTransform = glGetUniformLocation(this->program, variable);
-	if (idModelTransform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
-	glUniform1f(idModelTransform, value);
+	GLint id_uniform = glGetUniformLocation(this->program, variable);
+	if (id_uniform == -1) printf("[UNIFORM] There was a problem with insertion: %s\n", variable);
+	glUniform1f(id_uniform, value);
 }
 
 void Shader::useProgram()

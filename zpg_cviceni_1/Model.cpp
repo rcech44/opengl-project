@@ -32,135 +32,97 @@ int Model::getName()
 
 void Model::set()
 {
-	printf("[OBJECTS] Creating VAO and VBO...\n");
+	// Create VBO and VAO
+	createVAOVBO();
 
-	//vertex buffer object (VBO)
-	GLuint temp_VBO = 0;
-	glGenBuffers(1, &temp_VBO);				// generate the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, temp_VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->points_size, this->points, GL_STATIC_DRAW);
-	this->VBO = temp_VBO;
-
-	//Vertex Array Object (VAO)
-	GLuint temp_VAO = 0;
-	glGenVertexArrays(1, &temp_VAO);		// generate the VAO
-	glBindVertexArray(temp_VAO);			// bind the VAO
-	this->VAO = temp_VAO;
-
-	// position attribute
+	// Enable vertex attributes and specify their content
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size) * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	// color attribute
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size) * sizeof(float), (void*)(coords_size * sizeof(float)));
-
-	printf("[OBJECTS] Created VAO and VBO for model\n");
 }
 
 void Model::setSkyBox()
 {
-	printf("[OBJECTS] Creating VAO and VBO...\n");
+	// Create VBO and VAO
+	createVAOVBO();
 
-	//vertex buffer object (VBO)
-	GLuint temp_VBO = 0;
-	glGenBuffers(1, &temp_VBO);				// generate the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, temp_VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->points_size, this->points, GL_STATIC_DRAW);
-	this->VBO = temp_VBO;
-
-	//Vertex Array Object (VAO)
-	GLuint temp_VAO = 0;
-	glGenVertexArrays(1, &temp_VAO);		// generate the VAO
-	glBindVertexArray(temp_VAO);			// bind the VAO
-	this->VAO = temp_VAO;
-
-	// position attribute
+	// Enable vertex attributes and specify their content
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size) * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	printf("[OBJECTS] Created VAO and VBO for model\n");
 }
 
 void Model::setWithTexture()
 {
-	printf("[OBJECTS] Creating VAO and VBO...\n");
+	// Create VBO and VAO
+	createVAOVBO();
 
-	//vertex buffer object (VBO)
-	GLuint temp_VBO = 0;
-	glGenBuffers(1, &temp_VBO);				// generate the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, temp_VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->points_size, this->points, GL_STATIC_DRAW);
-	this->VBO = temp_VBO;
-
-	//Vertex Array Object (VAO)
-	GLuint temp_VAO = 0;
-	glGenVertexArrays(1, &temp_VAO);		// generate the VAO
-	glBindVertexArray(temp_VAO);			// bind the VAO
-	this->VAO = temp_VAO;
-
-	// bind buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// position attribute
+	// Enable vertex attributes and specify their content
 	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2) * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// color attribute
 	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2) * sizeof(float), (void*)(coords_size * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// texture attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2) * sizeof(float), (void*)((coords_size + color_size) * sizeof(float)));
 	glEnableVertexAttribArray(2);
-
-	printf("[OBJECTS] Created VAO and VBO for model\n");
 }
 
 void Model::setObject()
 {
+	// Create new importer and define settings
 	Assimp::Importer importer;
 	unsigned int importOptions = aiProcess_Triangulate
 		| aiProcess_OptimizeMeshes              // slouèení malých plošek
 		| aiProcess_JoinIdenticalVertices       // NUTNÉ jinak hodnì duplikuje
 		| aiProcess_Triangulate                 // prevod vsech ploch na trojuhelniky
 		| aiProcess_CalcTangentSpace;           // vypocet tangenty, nutny pro spravne pouziti normalove mapy
+
+	// Read .obj file
 	const aiScene* scene = importer.ReadFile(path, importOptions);
+
+	// If read correctly, process it
 	if (scene) {
+		// Take only first mesh
 		aiMesh* mesh = scene->mMeshes[0];
+
+		// Save number of objects - number of triangles in mesh * 3
 		this->number_of_objects = mesh->mNumFaces * 3;
-		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+
+		// Go through all triangles
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+		{
+			// Go through all points of triangle
 			for (unsigned int j = 0; j < 3; j++)
 			{
+				// Coordinates of point
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].y);
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].z);
+
+				// Get normals as normalized vectors
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].y);
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].z);
+
+				// Get texture coordinates (UV)
 				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].y);
 			}
 		}
 	}
-	//Vertex Array Object (VAO)
-	GLuint VBO = 0;
-	glGenBuffers(1, &VBO); // generate the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, points_obj.size() * sizeof(float), &points_obj[0], GL_STATIC_DRAW);
-	this->VBO = VBO;
 
-	GLuint VAO = 0;
-	glGenVertexArrays(1, &VAO); //generate the VAO
-	glBindVertexArray(VAO); //bind the VAO
-	this->VAO = VAO;
+	// Save information and points
+	this->points_size = points_obj.size() * sizeof(float);
+	this->points = &points_obj[0];
 
-	//enable vertex attributes
+	// Create VBO and VAO
+	createVAOVBO();
+
+	// Enable vertex attributes and specify their content
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2) * sizeof(float), (GLvoid*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2) * sizeof(float), (GLvoid*)(sizeof(float) * color_size));
@@ -172,27 +134,46 @@ void Model::setObject()
 
 void Model::setObjectWithNormals()
 {
+	// Create new importer and define settings
 	Assimp::Importer importer;
 	unsigned int importOptions = aiProcess_Triangulate
 		| aiProcess_OptimizeMeshes              // slouèení malých plošek
 		| aiProcess_JoinIdenticalVertices       // NUTNÉ jinak hodnì duplikuje
 		| aiProcess_Triangulate                 // prevod vsech ploch na trojuhelniky
 		| aiProcess_CalcTangentSpace;           // vypocet tangenty, nutny pro spravne pouziti normalove mapy
+
+	// Read .obj file
 	const aiScene* scene = importer.ReadFile(path, importOptions);
+
+	// If read correctly, process it
 	if (scene) {
+		// Take only first mesh
 		aiMesh* mesh = scene->mMeshes[0];
+
+		// Save number of objects - number of triangles in mesh * 3
 		this->number_of_objects = mesh->mNumFaces * 3;
-		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+
+		// Go through all triangles
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++) 
+		{
+			// Go through all points of triangle
 			for (unsigned int j = 0; j < 3; j++)
 			{
+				// Coordinates of point
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].y);
 				points_obj.push_back(mesh->mVertices[mesh->mFaces[i].mIndices[j]].z);
+
+				// Get normals as normalized vectors
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].y);
 				points_obj.push_back(mesh->mNormals[mesh->mFaces[i].mIndices[j]].z);
+
+				// Get texture coordinates (UV)
 				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mTextureCoords[0][mesh->mFaces[i].mIndices[j]].y);
+
+				// Get tangents
 				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].x);
 				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].y);
 				points_obj.push_back(mesh->mTangents[mesh->mFaces[i].mIndices[j]].z);
@@ -200,22 +181,16 @@ void Model::setObjectWithNormals()
 		}
 	}
 
-	//Vertex Array Object (VAO)
-	GLuint VBO = 0;
-	glGenBuffers(1, &VBO); // generate the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, points_obj.size() * sizeof(float), &points_obj[0], GL_STATIC_DRAW);
-	this->VBO = VBO;
+	// Save information and points
+	this->points_size = points_obj.size() * sizeof(float);
+	this->points = &points_obj[0];
 
-	GLuint VAO = 0;
-	glGenVertexArrays(1, &VAO); //generate the VAO
-	glBindVertexArray(VAO); //bind the VAO
-	this->VAO = VAO;
+	// Create VBO and VAO
+	createVAOVBO();
 
-	//enable vertex attributes
+	// Enable vertex attributes and specify their content
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, coords_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, color_size, GL_FLOAT, GL_FALSE, (coords_size + color_size + 2 + 3) * sizeof(float), (GLvoid*)(sizeof(float) * color_size));
@@ -228,21 +203,46 @@ void Model::setObjectWithNormals()
 
 }
 
+void Model::createVAOVBO()
+{
+	// Vertex Buffer Object (VAO) - GPU memory that holds information about vertices
+	GLuint VBO = 0;
+
+	// Generate new VBO
+	glGenBuffers(1, &VBO);
+
+	// Bind it as current buffer - so we can work with it
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// Copy data to buffer (GL_STATIC_DRAW = the data is set only once and used many times)
+	glBufferData(GL_ARRAY_BUFFER, this->points_size, this->points, GL_STATIC_DRAW);
+
+	// Save ID of newly created VBO
+	this->VBO = VBO;
+
+
+	// Vertex Array Object (VAO) - "instructions" how to use data in VBO
+	GLuint VAO = 0;
+
+	// Generate new VAO
+	glGenVertexArrays(1, &VAO);
+
+	// Bind it as current VAO - so we can work with it
+	glBindVertexArray(VAO);
+
+	// Save its ID
+	this->VAO = VAO;
+
+	printf("[OBJECTS] Created VAO and VBO for model\n");
+}
+
 void Model::render()
 {
+	// Render object
 	switch (this->type)
 	{
-		case GL_POLYGON:
-			glBindVertexArray(this->VAO);
-			glDrawArrays(GL_POLYGON, 0, number_of_objects);
-			break;
-
-		case GL_QUADS:
-			glBindVertexArray(this->VAO);
-			glDrawArrays(GL_QUADS, 0, number_of_objects);
-			break;
-
 		case GL_TRIANGLES:
+			// Specify the VAO of object
 			glBindVertexArray(this->VAO);
 			glDrawArrays(GL_TRIANGLES, 0, number_of_objects);
 			break;

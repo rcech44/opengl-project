@@ -18,7 +18,7 @@
 class Camera : public Observer, public Observable
 {
 private:
-    glm::vec3 eye{ 0.f, 0.f, 4.0f };
+    glm::vec3 eye{ 0.f, 2.f, 4.0f };
     glm::vec3 target{ 0.f, 0.f, -1.f };
     glm::vec3 up{ 0.f, 1.0f, 0.f };
     glm::mat4 camera;

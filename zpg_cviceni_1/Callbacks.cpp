@@ -8,17 +8,20 @@
 
 void Application::error_callback(int error, const char* description)
 {
+	// Print error in STDERR when error occures
 	fputs(description, stderr);
 }
 
 void Application::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// If ESCAPE key is pressed, handle exit application
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		printf("[INIT] Exiting...\n");
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 	
+	// If key is hold, process movement and flashlight
 	if (action != GLFW_PRESS)
 	switch (key)
 	{
@@ -54,15 +57,6 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 
 		case GLFW_KEY_E:
 			scene.toggleFlashlight();
-			/*if (action == GLFW_PRESS)
-			{
-				this->mouse_before_x = mouse.getX();
-				this->mouse_before_y = mouse.getY();
-				this->mouseChangeState();
-				if (this->mouse_enabled) glfwSetInputMode(this->window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				else glfwSetInputMode(this->window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				glfwSetCursorPos(window, mouse_before_x, mouse_before_y);
-			}*/
 			break;
 
 		default:
@@ -71,16 +65,19 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 	}
 }
 
+// Callback when window focus changes (clicked outside of window)
 void Application::window_focus_callback(GLFWwindow* window, int focused)
 {
 	printf("Changed window focus: %s \n", focused ? "focused" : "out of focus");
 }
 
+// Callback when window is minimized
 ; void Application::window_iconify_callback(GLFWwindow* window, int iconified)
 {
 	printf("Window state changed: %s\n", iconified ? "minimized" : "not minimized");
 }
 
+// Callback when window size changed
 void Application::window_size_callback(GLFWwindow* window, int width, int height)
 {
 	printf("Window resized: %d, %d \n", width, height);
@@ -88,6 +85,7 @@ void Application::window_size_callback(GLFWwindow* window, int width, int height
 	this->scene.getCamera()->setProjection(width, height);
 }
 
+// Callback when mouse moved
 void Application::cursor_callback(GLFWwindow* window, double x, double y)
 {
 	mouse.calculatePosition(x, y);
@@ -96,28 +94,43 @@ void Application::cursor_callback(GLFWwindow* window, double x, double y)
 	//printf("Cursor location changed: %f, %f \n", x, y);
 }
 
+// Callback when mouse button was pressed
 void Application::button_callback(GLFWwindow* window, int button, int action, int mode)
 {
 	if (GLFW_PRESS == action)
 	{
+		// Get frame buffer size
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
-		GLbyte color[4];
+
+		// Init needed variables
 		GLfloat depth;
-		GLuint index; // identifikace tìlesa
+		GLuint index;
+
+		// Calculate center of screen
 		int x = width / 2;
 		int y = height / 2;
-		//glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+
+		// Read pixels from frame buffer
 		glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 		glReadPixels(x, y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
-		//printf("Clicked on pixel %d, %d, color %02hhx%02hhx%02hhx%02hhx, depth % f, stencil index % u\n", x, y, color[0], color[1], color[2], color[3], depth, index);
 		
+		// Point representing center of screen with depth
 		glm::vec3 screenX = glm::vec3(x, y, depth);
+
+		// Camera view - what camera sees
 		glm::mat4 view = this->scene.getCamera()->getView();
+
+		// Projection matrix
 		glm::mat4 projection = this->scene.getCamera()->getProjection();
+
+		// View port - location in window where scene is rendered
 		glm::vec4 viewPort = glm::vec4(0, 0, width, height);
+
+		// Calculating world coordinates from screen coordinates
 		glm::vec3 pos = glm::unProject(screenX, view, projection, viewPort);
-		//printf("%f %f %f\n", pos.x, pos.y, pos.z);
+
+		// On mouse click place new objects
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
 			this->scene.placeNewObject(pos, Tree2);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
