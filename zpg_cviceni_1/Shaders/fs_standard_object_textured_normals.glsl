@@ -16,11 +16,10 @@ in vec3 normal;
 in vec3 FragPos;        
 in vec3 vnc;
 in vec2 uvc;
-// in vec3 tgc;
+
 in mat3 tbn;
 out vec4 frag_colour;
 
-// uniform vec3 objectColor;
 uniform vec3 viewPos;
 uniform int lightCount;
 uniform int flashlightEnabled;
@@ -77,6 +76,7 @@ void main ()
 
 vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightColor, float lightStrength, vec3 color) 
 {
+	vec3 ambient = vec3(0.1);
     const float specularStrength = 0.4;
 
     // Vzdalenost mezi svetlem a fragmentem
@@ -120,7 +120,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 
     // Pokud neni osvetleno, vratit 0
     if (dot_product < 0.0) {
-        spec = vec3(0.0);
+        spec = vec3(0.1);
     }
     vec3 specular = attenuation * spec;
 
@@ -129,35 +129,61 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 
 vec3 spot_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightDirection, vec3 lightColor, float cutoff, float outer_cutoff, float lightStrength, vec3 color) 
 {
-    vec3 lightDir = normalize(lightPosition - worldPos);
+    const float specularStrength = 0.4;
+	
+	
+	// Odectenim pozice vrcholu od pozice svetla nam da smer svetla mezi pozici svetla a pozici fragmentu
+    vec3 lightDirectionToObject = normalize(lightPosition - worldPos);
 
+	// Získání normály v daném texelu a získání RGB složek
     vec3 encodedNormal  = texture(textureUnitID_normal, uvc).rgb;
+	
+	// Zajištění, že hodnoty budou od [-1, 1]
     encodedNormal = 2.0 * encodedNormal - 1.0; //RGB to vector
+	
+	// Nastavení intenzity normály (1,1,1)
     encodedNormal = normalize (encodedNormal*vec3(1,1,1)); //intensity
+	
+	// Získání normály z TBN matice
     vec3 _normal = normalize(tbn * encodedNormal) ;
 
-    // diffuse
+    // Vzdalenost mezi svetlem a fragmentem
     float dist = length(lightPosition - worldPos);
 
-    float theta = dot(lightDir, normalize(-lightDirection));
+	// toto nam vrati cosinus uhlu mezi vektorem smeru baterky (dopredu) a vektorem smeru k fragmentu
+    float theta = dot(lightDirectionToObject, normalize(-lightDirection));
 
-    const float specularStrength = 0.4;
-
+	// Vypocet utlumu - rovnice pro výpočet
+    // Konstantní člen - často 1.0, zajišťuje, aby hodnota nebyla menší než jedna
+    // Lineární člen - 0.09 * vzdálenost, linárně zmenšuje intenzitu
+    // Kvadratický člen - 0.032 * pow(vzdálenost, 2), méně účinný při malých vzdálenostech, ale efektivní při větších vzdálenostech
     float attenuation = 1.0 / (1.0 + 0.05 * dist + 0.016 * (dist * dist));
 
+	// Odectenim pozic fragmentu a kamery ziskame smer pohledu
     vec3 viewDir = normalize(viewPos - worldPos);
-    vec3 reflectionDir = reflect(-lightDir, _normal);
+	
+	// Vrati nam odrazovy smer (normaly z tangent space a smeru pohledu k fragmentu)
+    vec3 reflectionDir = reflect(-lightDirectionToObject, _normal);
 
+	// Rozdil uhlu
     float epsilon = cutoff - outer_cutoff;
+	
+	// Odecteni thety (cosinus uhlu mezi vektorem smeru baterky (dopredu) a vektorem smeru k fragmentu) a vnejsiho orezu a vydeleni rozdilem orezu, zajisteni hodnot mezi 0 a 1
     float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0);
 
-    float dot_product = dot(lightDir, _normal);
+	// toto nam vrati cosinus uhlu mezi novou normalou a smerem svetla k objektu
+    float dot_product = dot(lightDirectionToObject, _normal);
+	
+	// difuzni slozka, max - zajisteni, ze neni nulove
     vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
+	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
+	
+	// Pokud je objekt mimo svetlo, nastavit nulu
     if (dot_product < 0.0) {
-        spec = vec3(0.0);
+        spec = vec3(0.1);
     }
     vec3 specular = attenuation * spec;
 
@@ -171,18 +197,34 @@ vec3 directional_light(vec3 worldPos, vec3 normalVector, vec3 lightDirection, ve
 {
     const float specularStrength = 0.4;
 
+	// Získání normály v daném texelu a získání RGB složek
     vec3 encodedNormal  = texture(textureUnitID_normal, uvc).rgb;
+	
+	// Zajištění, že hodnoty budou od [-1, 1]
     encodedNormal = 2.0 * encodedNormal - 1.0; //RGB to vector
+	
+	// Nastavení intenzity normály (1,1,1)
     encodedNormal = normalize (encodedNormal*vec3(1,1,1)); //intensity
+	
+	// Získání normály z TBN matice
     vec3 _normal = normalize(tbn * encodedNormal) ;
 
+	// Smer svetla
     vec3 lightDir = normalize(-lightDirection);
+	
+	// toto nam vrati cosinus uhlu mezi novou normalou a smerem svetla
     float dot_product = dot(lightDir, _normal);
+	
+	// difuzni slozka, max - zajisteni, ze neni nulove
     vec3 diffuse = max(dot_product, 0.0) * lightColor;
 
+	// Smer k objektu - rozdil mezi pozici objektu a pozici kamery
     vec3 viewDir = normalize(viewPos - worldPos);
+	
+	// Smer reflektu - rozdil normaly a smeru svetla
     vec3 reflectionDir = reflect(-lightDir, _normal);
 
+	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
     if (dot_product < 0.0) {

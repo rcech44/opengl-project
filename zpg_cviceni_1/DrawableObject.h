@@ -22,6 +22,7 @@
 #include "Transformation.h"
 
 class Scene;
+class ObjectMovement;
 
 class DrawableObject
 {
@@ -30,11 +31,13 @@ private:
 	glm::mat4 last_position{ 1.f };
 	std::vector<Transformation> transformations;
 	int id = -1;
+	const char* name = nullptr;
 
 	// references
 	Scene* scene = nullptr;
 	Model* model = nullptr;
 	Shader* shader = nullptr;
+	ObjectMovement* movement = nullptr;
 
 	// optional
 	int texture = -1;
@@ -46,9 +49,13 @@ public:
 
 	glm::mat4 transform();
 	void addTransformation(glm::vec3 tf, int type);
+	void setPosition(glm::vec3 pos);
 	void setColor(glm::vec3 color);
 	void assignTexture(int t);
 	void assignTexture(int t, int n);
+	void assignMovement(ObjectMovement* m);
+	void move();
 	int getID();
+	const char* getName();
 };
 

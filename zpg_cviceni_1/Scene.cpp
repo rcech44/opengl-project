@@ -58,6 +58,20 @@ void Scene::placeNewObject(glm::vec3 pos, int object_name, int shader)
 	addObject(&do_new);
 }
 
+void Scene::removeObject(int id)
+{
+	int found = -1;
+	for (int i = 0; i < this->objects.size(); i++)
+	{
+		if (this->objects.at(i).getID() == id) found = i;
+	}
+
+	if (found != -1)
+	{
+		this->objects.erase(objects.begin() + found);
+	}
+}
+
 void Scene::addSkybox(DrawableObject* obj)
 {
 	this->skyboxes.emplace_back(*obj);
@@ -103,11 +117,12 @@ void Scene::update()
 
 	camera.apply();
 	for (auto& s : skyboxes)
-	{ 
+	{	
 		s.render();
 	}
 	for (auto& o : objects)
 	{
+		o.move();
 		o.render();
 	}
 }
@@ -115,14 +130,16 @@ void Scene::update()
 void Scene::init()
 {
 	// Create shaders
-	Shader* sh1 = new Shader("Shaders/multiple_lights.glsl", "Shaders/light_camera.vs", StandardObject);				// standard shader
-	Shader* sh6 = new Shader("Shaders/texture.fs", "Shaders/texture.vs", StandardObjectTextured);						// standard shader with textures
-	Shader* sh8 = new Shader("Shaders/texture_normal.fs", "Shaders/texture_normal.vs", StandardObjectTexturedNormal);	// standard shader with textures and normals
-	Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);											// constant color shader
-	Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);										// constant color shader
-	Shader* sh5 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);						// object with constant color shader with texture
-	Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader without light check
-	Shader* sh7 = new Shader("Shaders/texture_skybox.fs", "Shaders/texture_skybox.vs", SkyBox);							// standard shader without light check
+	Shader* sh1 = new Shader("Shaders/fs_standard_object.glsl", "Shaders/vs_standard_object.glsl", StandardObject);													// standard shader
+	Shader* sh6 = new Shader("Shaders/fs_standard_object_textured.glsl", "Shaders/vs_standard_object_textured.glsl", StandardObjectTextured);						// standard shader with textures
+	Shader* sh8 = new Shader("Shaders/fs_standard_object_textured_normals.glsl", "Shaders/vs_standard_object_textured_normals.glsl", StandardObjectTexturedNormal);	// standard shader with textures and normals
+	Shader* sh5 = new Shader("Shaders/fs_constant_object.glsl", "Shaders/vs_constant_object.glsl", ConstantObject);													// object with constant color shader with texture
+	Shader* sh7 = new Shader("Shaders/fs_skybox.glsl", "Shaders/vs_skybox.glsl", SkyBox);																			// standard shader without light check
+
+	// Deprecated shaders
+	// Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader without light check
+	// Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);										// constant color shader
+	// Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);											// constant color shader
 
 	// Create objects
 	Model* m1 = new Model(Monkey, HeaderType, suziSmooth, sizeof(suziSmooth), GL_TRIANGLES, 2904, 3, 3);
@@ -141,7 +158,6 @@ void Scene::init()
 	// Models init
 	m1->set();
 	m2->set();
-	//m3->set();
 	m4->setWithTexture();
 	m5->set();
 	m6->set();
@@ -152,6 +168,8 @@ void Scene::init()
 	m11->setObject();
 	m12->setObject();
 	m13->setObjectWithNormals();
+
+	// Add models
 	addModel(m1, Monkey);
 	addModel(m2, Sphere);
 	addModel(m4, Plain);
@@ -167,59 +185,107 @@ void Scene::init()
 
 	// Shaders init
 	sh1->set();
-	sh2->set();
-	//sh3->set();
-	//sh4->set();
 	sh5->set();
 	sh6->set();
 	sh7->set();
 	sh8->set();
 	addShader(sh1, StandardObject);
-	addShader(sh2, LightSource);
-	//addShader(sh3, );
-	//addShader(sh4, );
 	addShader(sh5, ConstantObject);
 	addShader(sh6, StandardObjectTextured);
 	addShader(sh7, SkyBox);
 	addShader(sh8, StandardObjectTexturedNormal);
 
+	// Load textures
+	Texture* t1 = new Texture(TextureType::Standard);
+	t1->assignTexture("Textures/grass.png");
+	addTexture(t1, Plain2);
 
-	// Scene 0 - high number of trees, monkeys, gift, bushes and spheres randomly placed with light source above with "skybox" and ground
-	// Scene 1 - four spheres around light source with light check
-	// Scene 2 - four spheres around light source without light check
-	// Scene 3 - WIP
+	Texture* t5 = new Texture(TextureType::Standard);
+	t5->assignTexture("Models/building/model.png");
+	addTexture(t5, Building);
 
- 	int set_scene = 3;
+	Texture* t6 = new Texture(TextureType::Standard);
+	t6->assignTexture("Models/zombie/zombie.png");
+	addTexture(t6, Zombie);
+
+	Texture* t7 = new Texture(TextureType::Standard);
+	t7->assignTexture("Models/tree/tree.png");
+	addTexture(t7, Tree2);
+
+	Texture* t4 = new Texture(TextureType::CubeMap);
+	t4->assignTexture("Textures/skybox2/px.png", "Textures/skybox2/nx.png", "Textures/skybox2/py.png", "Textures/skybox2/ny.png", "Textures/skybox2/pz.png", "Textures/skybox2/nz.png");
+	addTexture(t4, SkyCube);
+
+	Texture* t8 = new Texture(TextureType::Standard);
+	t8->assignTextureWithNormal("Models/box/albedo.png", "Models/box/normalmap.png");
+	addTexture(t8, Box);
+
+
+	// Scene 0 - lighting test - four spheres with light source
+	// Scene 1 - larger scene with multiple models and shaders
+
+ 	int set_scene = 1;
 
 	switch (set_scene)
 	{
-		case 3:
+		case 0:
 		{
-			Texture* t1 = new Texture(TextureType::Standard);
-			t1->assignTexture("Textures/grass.png");
-			addTexture(t1, Plain2);
+			// Create four spheres
+			DrawableObject do_sphere_1 = DrawableObject(m2, sh1, this, this->object_id++);
+			do_sphere_1.addTransformation(glm::vec3(-4, 0, -3), Translation);
+			do_sphere_1.setColor(glm::vec3(1, 0, 0));
+			addObject(&do_sphere_1);
 
-			Texture* t5 = new Texture(TextureType::Standard);
-			t5->assignTexture("Models/building/model.png");
-			addTexture(t5, Building);
+			DrawableObject do_sphere_2 = DrawableObject(m2, sh1, this, this->object_id++);
+			do_sphere_2.addTransformation(glm::vec3(0, 4, -3), Translation);
+			do_sphere_2.setColor(glm::vec3(0, 1, 0));
+			addObject(&do_sphere_2);
 
-			Texture* t6 = new Texture(TextureType::Standard);
-			t6->assignTexture("Models/zombie/zombie.png");
-			addTexture(t6, Zombie);
+			DrawableObject do_sphere_3 = DrawableObject(m2, sh1, this, this->object_id++);
+			do_sphere_3.addTransformation(glm::vec3(4, 0, -3), Translation);
+			do_sphere_3.setColor(glm::vec3(0, 0, 1));
+			addObject(&do_sphere_3);
 
-			Texture* t7 = new Texture(TextureType::Standard);
-			t7->assignTexture("Models/tree/tree.png");
-			addTexture(t7, Tree2);
+			DrawableObject do_sphere_4 = DrawableObject(m2, sh1, this, this->object_id++);
+			do_sphere_4.addTransformation(glm::vec3(0, -4, -3), Translation);
+			do_sphere_4.setColor(glm::vec3(0, 1, 1));
+			addObject(&do_sphere_4);
 
-			Texture* t4 = new Texture(TextureType::CubeMap);
-			t4->assignTexture("Textures/skybox2/px.png", "Textures/skybox2/nx.png", "Textures/skybox2/py.png", "Textures/skybox2/ny.png", "Textures/skybox2/pz.png", "Textures/skybox2/nz.png");
-			addTexture(t4, SkyCube);
+			// Add plain (ground)
+			DrawableObject do_ground = DrawableObject(m4, sh1, this, this->object_id++);
+			do_ground.addTransformation(glm::vec3(0, -5, 0), Translation);
+			do_ground.addTransformation(glm::vec3(100, 1, 100), Scale);
+			do_ground.setColor(glm::vec3(0.3, 0.3, 0.3));
+			addObject(&do_ground);
 
-			Texture* t8 = new Texture(TextureType::Standard);
-			t8->assignTextureWithNormal("Models/box/albedo.png", "Models/box/normalmap.png");
-			addTexture(t8, Box);
+			// Add light between spheres
+			Light light_point = Light(LightType::Point);
+			light_point.setPosition(glm::vec3(0, 0, -3));
+			addLight(&light_point);
 
+			// Add spotlight
+			Light light_spotlight = Light(LightType::SpotlightCamera);
+			light_spotlight.setCutoff(glm::cos(glm::radians(30.f)));
+			light_spotlight.setOuterCutoff(glm::cos(glm::radians(35.f)));
+			addLight(&light_spotlight);
 
+			// Render all light sources as light spheres
+			for (Light& l : lights)
+			{
+				if (l.type == LightType::Point)
+				{
+					DrawableObject do_temp = DrawableObject(m2, sh5, this, object_id++);
+					do_temp.setColor(l.color);
+					do_temp.addTransformation(l.position, Translation);
+					do_temp.addTransformation(glm::vec3(0.4, 0.4, 0.4), Scale);
+					addObject(&do_temp);
+				}
+			}
+
+			break;
+		}
+		case 1:
+		{
 			Light light3 = Light(LightType::Point);
 			Light light4 = Light(LightType::SpotlightCamera);
 			Light light5 = Light(LightType::Directional);
@@ -257,7 +323,7 @@ void Scene::init()
 			{
 				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
 				{
-					DrawableObject do_temp = DrawableObject(m2, sh2, this, object_id++);
+					DrawableObject do_temp = DrawableObject(m2, sh5, this, object_id++);
 					do_temp.setColor(l.color);
 					do_temp.addTransformation(l.position, Translation);
 					do_temp.addTransformation(glm::vec3(0.4, 0.4, 0.4), Scale);
@@ -338,6 +404,16 @@ void Scene::init()
 			DrawableObject do_skybox = DrawableObject(m8, sh7, this, object_id++);
 			do_skybox.assignTexture(t4->getID());
 			addSkybox(&do_skybox);
+
+			// Create movement
+			ObjectMovement* line_move = new ObjectMovement(glm::vec3(0, 10, 0), glm::vec3(0, 2, -30), 0.001);
+			ObjectMovement* orbit_move = new ObjectMovement(glm::vec3(0, 25, 0), 15, 1);
+
+			// Create moving sphere
+			DrawableObject do_box1 = DrawableObject(m13, sh8, this, object_id++);
+			do_box1.assignTexture(t8->getID(), t8->getNormalID());
+			do_box1.assignMovement(orbit_move);
+			addObject(&do_box1);
 
 			break;
 		}
@@ -648,7 +724,7 @@ void Scene::init()
 
 	// Register observers
 	getCamera()->registerObserver(*sh1);
-	getCamera()->registerObserver(*sh2);
+	//getCamera()->registerObserver(*sh2);
 	//getCamera()->registerObserver(*sh3);
 	//getCamera()->registerObserver(*sh4);
 	getCamera()->registerObserver(*sh5);
@@ -665,4 +741,8 @@ void Scene::toggleFlashlight()
 bool Scene::flashlightStatus()
 {
 	return flashlight;
+}
+std::vector<DrawableObject>* Scene::getObjects()
+{
+	return &this->objects;
 }

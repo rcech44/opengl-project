@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DrawableObject.h"
+#include "ObjectMovement.h"
 #include "Scene.h"
 
 DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene, int id)
@@ -9,6 +10,45 @@ DrawableObject::DrawableObject(Model* m, Shader* s, Scene* scene, int id)
 	this->shader = s;
 	this->scene = scene;
 	this->id = id;
+	switch (m->getName())
+	{
+		case 0:
+			this->name = "Monkey";
+			break;
+		case 1:
+			this->name = "Sphere";
+			break;
+		case 2:
+			this->name = "Plain";
+			break;
+		case 3:
+			this->name = "Tree";
+			break;
+		case 4:
+			this->name = "Bush";
+			break;
+		case 5:
+			this->name = "GiftBox";
+			break;
+		case 6:
+			this->name = "SkyCube";
+			break;
+		case 7:
+			this->name = "Building";
+			break;
+		case 8:
+			this->name = "Zombie";
+			break;
+		case 9:
+			this->name = "Tree2";
+			break;
+		case 10:
+			this->name = "Plain2";
+			break;
+		case 11:
+			this->name = "Box";
+			break;
+	}
 }
 
 void DrawableObject::render()
@@ -45,7 +85,7 @@ void DrawableObject::render()
 			this->shader->matrixInsert(glm::mat4(this->scene->getCamera()->getProjection()), ProjectionMatrix);
 			this->shader->intInsert(0, "UISky");
 
-			// All fragments should pass stencil test and are allowed to write
+			// All fragments should pass stencil test and are allowed to write (0xFF)
 			glStencilFunc(GL_ALWAYS, this->getID(), 0xFF);
 			this->model->render();
 
@@ -136,6 +176,10 @@ void DrawableObject::render()
 	}
 }
 
+void DrawableObject::setPosition(glm::vec3 pos)
+{
+	this->last_position = glm::translate(glm::mat4{1.f}, pos);
+}
 
 glm::mat4 DrawableObject::transform()
 {
@@ -190,4 +234,22 @@ void DrawableObject::assignTexture(int t, int n)
 int DrawableObject::getID()
 {
 	return this->id;
+}
+
+const char* DrawableObject::getName()
+{
+	return this->name;
+}
+
+void DrawableObject::assignMovement(ObjectMovement* m)
+{
+	this->movement = m;
+}
+
+void DrawableObject::move()
+{
+	if (this->movement)
+	{
+		this->movement->move(this);
+	}
 }

@@ -14,6 +14,7 @@
 
 //Include classes
 #include "DrawableObject.h"
+#include "ObjectMovement.h"
 #include "Camera.h"
 #include "Light.h"
 
@@ -41,9 +42,11 @@ public:
 	void addLight(Light* l);
 	void addTexture(Texture* t, int id);
 	void placeNewObject(glm::vec3 pos, int object_name, int shader);
+	void removeObject(int id);
 
 	Camera* getCamera();
 	std::vector<Light>* getLights();
+	std::vector<DrawableObject>* getObjects();
 	bool flashlightStatus();
 
 	void update();

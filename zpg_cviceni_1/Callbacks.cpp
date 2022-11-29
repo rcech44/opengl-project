@@ -128,6 +128,15 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 		// Read pixels from frame buffer
 		glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 		glReadPixels(x, y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+
+		// Recognize object and print info
+		const char* name = "none";
+		for (auto& obj : *scene.getObjects())
+		{
+			if (obj.getID() == index) name = obj.getName();
+		}
+
+		printf("[STENCIL] Selected '%s' with id %d\n", name, index);
 		
 		// Point representing center of screen with depth
 		glm::vec3 screenX = glm::vec3(x, y, depth);
@@ -146,10 +155,11 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 
 		// On mouse click place new objects
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
-			this->scene.placeNewObject(pos, Tree2, StandardObjectTextured);
+			this->scene.removeObject(index);
+			//this->scene.placeNewObject(pos, Tree2, StandardObjectTextured);
+		//if (button == GLFW_MOUSE_BUTTON_RIGHT)
+		//	this->scene.placeNewObject(pos, Zombie, StandardObjectTextured);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
-			this->scene.placeNewObject(pos, Zombie, StandardObjectTextured);
-		if (button == GLFW_MOUSE_BUTTON_MIDDLE)
-			this->scene.placeNewObject(pos, Sphere, ConstantObject);
+			this->scene.placeNewObject(pos, Sphere, StandardObject);
 	}
 }
