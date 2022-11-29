@@ -35,6 +35,7 @@ void Scene::placeNewObject(glm::vec3 pos, int object_name, int shader)
 			do_new.assignTexture(textures.find(Tree2)->second->getID());
 			break;
 		case Zombie:
+			// Sample comment
 			do_new.addTransformation(glm::vec3(1.3f, 1.3f, 1.3f), Scale);
 			do_new.assignTexture(textures.find(Zombie)->second->getID());
 			break;
