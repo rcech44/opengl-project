@@ -64,19 +64,33 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 {
     const float specularStrength = 0.4;
 
+	// Vzdalenost mezi svetlem a fragmentem
     float dist = length(lightPosition - worldPos);
+	
+	// Vypocet utlumu - rovnice pro výpočet
+    // Konstantní člen - často 1.0, zajišťuje, aby hodnota nebyla menší než jedna
+    // Lineární člen - 0.09 * vzdálenost, linárně zmenšuje intenzitu
+    // Kvadratický člen - 0.032 * pow(vzdálenost, 2), méně účinný při malých vzdálenostech, ale efektivní při větších vzdálenostech
     float attenuation = 1.0 / (1.0 + 0.09 * dist + 0.032 * (dist * dist));
 
+	// Odectenim pozic fragmentu a kamery ziskame smer pohledu
     vec3 viewDir = normalize(viewPos - worldPos);
+	
+	// Odectenim pozice vrcholu od pozice svetla nam da smer svetla mezi pozici svetla a pozici fragmentu
     vec3 lightDir = normalize(lightPosition - worldPos);
+	
+	// Vypocet smeru odrazu
     vec3 reflectionDir = reflect(-lightDir, normalVector);
 
+	// Cosinus uhlu mezi dvema danymi vektory a max zajisti, ze neni zaporny
     float dot_product = dot(lightDir, normalVector);
     vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
-    // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
+	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
+	
+	// Pokud neni osvetleno, vratit 0
     if (dot_product < 0.0) {
         spec = vec3(0.0);
     }
@@ -87,28 +101,46 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 
 vec3 spot_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightDirection, vec3 lightColor, float cutoff, float outer_cutoff, float lightStrength) 
 {
-    vec3 lightDir = normalize(lightPosition - worldPos);
+const float specularStrength = 0.4;
+	
+	// Odectenim pozice vrcholu od pozice svetla nam da smer svetla mezi pozici svetla a pozici fragmentu
+    vec3 lightDirectionToObject = normalize(lightPosition - worldPos);
 
-    // diffuse
+    // Vzdalenost mezi svetlem a fragmentem
     float dist = length(lightPosition - worldPos);
 
-    float theta = dot(lightDir, normalize(-lightDirection));
+	// Cosinus uhlu mezi vektorem smeru baterky (dopredu) a vektorem smeru k fragmentu
+    float theta = dot(lightDirectionToObject, normalize(-lightDirection));
 
-    const float specularStrength = 0.4;
-
+	// Vypocet utlumu - rovnice pro výpočet
+    // Konstantní člen - často 1.0, zajišťuje, aby hodnota nebyla menší než jedna
+    // Lineární člen - 0.09 * vzdálenost, linárně zmenšuje intenzitu
+    // Kvadratický člen - 0.032 * pow(vzdálenost, 2), méně účinný při malých vzdálenostech, ale efektivní při větších vzdálenostech
     float attenuation = 1.0 / (1.0 + 0.05 * dist + 0.016 * (dist * dist));
 
+	// Odectenim pozic fragmentu a kamery ziskame smer pohledu
     vec3 viewDir = normalize(viewPos - worldPos);
-    vec3 reflectionDir = reflect(-lightDir, normalVector);
+	
+	// Vrati nam odrazovy smer
+    vec3 reflectionDir = reflect(-lightDirectionToObject, normalVector);
 
+	// Rozdil orezovych uhlu
     float epsilon = cutoff - outer_cutoff;
+	
+	// Odecteni thety (cosinus uhlu mezi vektorem smeru baterky (dopredu) a vektorem smeru k fragmentu) a vnejsiho orezu a vydeleni rozdilem orezu, zajisteni hodnot mezi 0 a 1
     float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0);
 
-    float dot_product = dot(lightDir, normalVector);
+	// Cosinus uhlu mezi normalou a smerem svetla k objektu
+    float dot_product = dot(lightDirectionToObject, normalVector);
+	
+	// difuzni slozka, max - zajisteni, ze neni nulove
     vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
+	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
+	
+	// Pokud je objekt mimo svetlo, nastavit nulu
     if (dot_product < 0.0) {
         spec = vec3(0.0);
     }
@@ -124,18 +156,29 @@ vec3 directional_light(vec3 worldPos, vec3 normalVector, vec3 lightDirection, ve
 {
     const float specularStrength = 0.4;
 
+	// Smer svetla
     vec3 lightDir = normalize(-lightDirection);
+	
+	// Cosinus uhlu mezi smerem svetla a normalou fragmentu
     float dot_product = dot(lightDir, normalVector);
+	
+	// Difuzni slozka
     vec3 diffuse = max(dot_product, 0.0) * lightColor;
 
+	// Smer pohledu k fragmentu od kamery
     vec3 viewDir = normalize(viewPos - worldPos);
+	
+	// Vypocet smeru odrazu
     vec3 reflectionDir = reflect(-lightDir, normalVector);
 
+	// Zrcadlova slozka
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
+	
+	// Pokud je objekt mimo svetlo, nastavit nulu
     if (dot_product < 0.0) {
         spec = vec3(0.0);
     }
-
+ 
     return (diffuse + spec) * objectColor * lightStrength;
 }

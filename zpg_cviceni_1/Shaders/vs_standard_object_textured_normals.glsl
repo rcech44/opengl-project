@@ -21,7 +21,7 @@ void main ()
 	// Převod z lokálního do globalního souřadného systému - do homogenního
 	FragPos = vec3(modelMatrix * vec4(pos, 1.0));
 
-	// Projekční matice - perspektivní promítání
+	// Projekční matice - perspektivní promítání, komolý jehlan (od -1 do 1)
 	// View matice - kamera
     gl_Position = projectionMatrix * viewMatrix * vec4 (FragPos, 1.0);
 

@@ -131,7 +131,6 @@ vec3 spot_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 light
 {
     const float specularStrength = 0.4;
 	
-	
 	// Odectenim pozice vrcholu od pozice svetla nam da smer svetla mezi pozici svetla a pozici fragmentu
     vec3 lightDirectionToObject = normalize(lightPosition - worldPos);
 
@@ -165,7 +164,7 @@ vec3 spot_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 light
 	// Vrati nam odrazovy smer (normaly z tangent space a smeru pohledu k fragmentu)
     vec3 reflectionDir = reflect(-lightDirectionToObject, _normal);
 
-	// Rozdil uhlu
+	// Rozdil orezovych uhlu
     float epsilon = cutoff - outer_cutoff;
 	
 	// Odecteni thety (cosinus uhlu mezi vektorem smeru baterky (dopredu) a vektorem smeru k fragmentu) a vnejsiho orezu a vydeleni rozdilem orezu, zajisteni hodnot mezi 0 a 1
@@ -227,6 +226,8 @@ vec3 directional_light(vec3 worldPos, vec3 normalVector, vec3 lightDirection, ve
 	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 spec = specularStrength * specValue * lightColor;
+	
+	// Pokud je objekt mimo svetlo, nastavit nulu
     if (dot_product < 0.0) {
         spec = vec3(0.0);
     }
