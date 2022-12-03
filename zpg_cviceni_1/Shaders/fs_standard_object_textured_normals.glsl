@@ -40,6 +40,9 @@ void main ()
 	
     // Získání texelu na konkrétním místě
 	vec4 tex = texture(textureUnitID_texture, uvc);
+	
+	// Ambientni slozka
+	vec3 ambient = vec3(0.05, 0.05, 0.05);
 
     // Získáni barev texelu
     vec3 color = vec3(tex.x, tex.y, tex.z);
@@ -71,7 +74,7 @@ void main ()
         }
 	}
 
-	frag_colour = vec4(result, 1.0);
+	frag_colour = vec4(result + ambient, 1.0);
 }
 
 vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightColor, float lightStrength, vec3 color) 

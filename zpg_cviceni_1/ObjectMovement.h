@@ -24,7 +24,8 @@ class DrawableObject;
 enum MovementType
 {
 	Line = 0,
-	Orbit = 1
+	Orbit = 1,
+	OrbitVertical = 2
 };
 
 class ObjectMovement
@@ -50,6 +51,6 @@ private:
 public:
 	ObjectMovement() {};
 	ObjectMovement(glm::vec3 from, glm::vec3 to, double speed);
-	ObjectMovement(glm::vec3 point, double radius, double speed);
+	ObjectMovement(glm::vec3 point, double radius, double speed, int type);
 	void move(DrawableObject* obj);
 };

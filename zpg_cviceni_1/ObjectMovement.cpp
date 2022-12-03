@@ -13,12 +13,12 @@ ObjectMovement::ObjectMovement(glm::vec3 from, glm::vec3 to, double speed)
 	this->type = Line;
 }
 
-ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed)
+ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed, int type)
 {
 	this->point = point;
 	this->orbit_radius = radius;
 	this->speed = speed;
-	this->type = Orbit;
+	this->type = type;
 	this->angle = 0;
 }
 
@@ -26,6 +26,7 @@ void ObjectMovement::move(DrawableObject* obj)
 {
 	switch (this->type)
 	{
+		// Move on line
 		case Line:
 			obj->addTransformation(glm::vec3(
 				(to_x - from_x) * speed,
@@ -33,13 +34,26 @@ void ObjectMovement::move(DrawableObject* obj)
 				(to_z - from_z) * speed
 			), Translation);
 			break;
+
+		// Orbit around object
 		case Orbit:
 			obj->setPosition(glm::vec3(
-				glm::cos(glm::radians(this->angle)) * orbit_radius + point.x,
+				glm::cos(glm::radians(this->angle)) * orbit_radius + point.x,	// move on X by cos of angle
 				point.y,
-				glm::sin(glm::radians(this->angle)) * orbit_radius + point.z)
+				glm::sin(glm::radians(this->angle)) * orbit_radius + point.z)	// move on Z by sin of angle
 			);
-			obj->addTransformation(glm::vec3(0, (glm::radians(-this->angle)), 0), Rotation);
+			obj->addTransformation(glm::vec3(0, (glm::radians(-this->angle)), 0), Rotation);	// rotate object around Y by angle
+			this->angle += speed;
+			break;
+
+		// Orbit around object vertically
+		case OrbitVertical:
+			obj->setPosition(glm::vec3(
+				glm::cos(glm::radians(this->angle)) * orbit_radius + point.x,	// move on X by cos of angle
+				glm::sin(glm::radians(this->angle)) * orbit_radius + point.y,	// move on Y by sin of angle
+				point.z
+			));
+			obj->addTransformation(glm::vec3(0, 0, (glm::radians(this->angle))), Rotation); // rotate object around Z by angle
 			this->angle += speed;
 			break;
 	}

@@ -93,6 +93,7 @@ void Application::window_size_callback(GLFWwindow* window, int width, int height
 	printf("Window resized: %d, %d \n", width, height);
 	this->window.changeSize(height, width);
 	this->scene.getCamera()->setProjection(width, height);
+	this->scene.getCamera()->apply();
 }
 
 // Callback when mouse moved

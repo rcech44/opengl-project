@@ -113,10 +113,6 @@ std::vector<Light>* Scene::getLights()
 
 void Scene::update()
 {
-	glClearColor(0.07f, 0.07f, 0.07f, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-	camera.apply();
 	for (auto& s : skyboxes)
 	{	
 		s.render();
@@ -130,17 +126,14 @@ void Scene::update()
 
 void Scene::init()
 {
+	srand(time(NULL));
+
 	// Create shaders
 	Shader* sh1 = new Shader("Shaders/fs_standard_object.glsl", "Shaders/vs_standard_object.glsl", StandardObject);													// standard shader
 	Shader* sh6 = new Shader("Shaders/fs_standard_object_textured.glsl", "Shaders/vs_standard_object_textured.glsl", StandardObjectTextured);						// standard shader with textures
 	Shader* sh8 = new Shader("Shaders/fs_standard_object_textured_normals.glsl", "Shaders/vs_standard_object_textured_normals.glsl", StandardObjectTexturedNormal);	// standard shader with textures and normals
 	Shader* sh5 = new Shader("Shaders/fs_constant_object.glsl", "Shaders/vs_constant_object.glsl", ConstantObject);													// object with constant color shader with texture
 	Shader* sh7 = new Shader("Shaders/fs_skybox.glsl", "Shaders/vs_skybox.glsl", SkyBox);																			// standard shader without light check
-
-	// Deprecated shaders
-	// Shader* sh4 = new Shader("Shaders/light_phong_no_check.fs", "Shaders/light_camera.vs", StandardObject);				// standard shader without light check
-	// Shader* sh3 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", ConstantObject);										// constant color shader
-	// Shader* sh2 = new Shader("Shaders/fs1.fs", "Shaders/vs1.vs", LightSource);											// constant color shader
 
 	// Create objects
 	Model* m1 = new Model(Monkey, HeaderType, suziSmooth, sizeof(suziSmooth), GL_TRIANGLES, 2904, 3, 3);
@@ -319,6 +312,12 @@ void Scene::init()
 			addLight(&light7);
 			addLight(&light8);
 
+			// Create movement
+			ObjectMovement* line_move = new ObjectMovement(glm::vec3(0, 10, 0), glm::vec3(0, 2, -30), 0.001);
+			ObjectMovement* orbit_move = new ObjectMovement(glm::vec3(0, 25, 0), 15, 1, Orbit);
+			ObjectMovement* orbit_move_2 = new ObjectMovement(glm::vec3(-2.f, 0.f, -7.f), 3, 0.5, Orbit);
+			ObjectMovement* orbit_move_3 = new ObjectMovement(glm::vec3(0.f, 0.f, 0.f), 100, 0.5, OrbitVertical);
+
 			// Render all light sources as light spheres
 			for (Light& l : lights)
 			{
@@ -406,9 +405,24 @@ void Scene::init()
 			do_skybox.assignTexture(t4->getID());
 			addSkybox(&do_skybox);
 
-			// Create movement
-			ObjectMovement* line_move = new ObjectMovement(glm::vec3(0, 10, 0), glm::vec3(0, 2, -30), 0.001);
-			ObjectMovement* orbit_move = new ObjectMovement(glm::vec3(0, 25, 0), 15, 1);
+			DrawableObject do_sun = DrawableObject(m2, sh5, this, object_id++);
+			do_sun.setColor(glm::vec3(1, 1, 0));
+			do_sun.assignMovement(orbit_move_3);
+			addObject(&do_sun);
+
+			// Create random bushes
+			for (int i = 0; i < 30; i++)
+			{
+				DrawableObject do_bush = DrawableObject(m6, sh6, this, object_id++);
+				do_bush.assignTexture(t1->getID());
+
+				int x = -10 + rand() % (10 - -10 + 1);
+				int z = -10 + rand() % (10 - -10 + 1);
+				do_bush.addTransformation(glm::vec3(x, 0, z), Translation);
+				do_bush.addTransformation(glm::vec3(4, 4, 4), Scale);
+
+				addObject(&do_bush);
+			}
 
 			// Create moving sphere
 			DrawableObject do_box1 = DrawableObject(m13, sh8, this, object_id++);

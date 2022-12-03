@@ -75,6 +75,9 @@ void Application::setGLSettings()
 
 void Application::loop()
 {
+	// First camera apply
+	this->scene.getCamera()->apply();
+
 	// Main loop
 	while (!window.shouldClose())
 	{
@@ -111,6 +114,10 @@ void Application::debugFPS()
 
 void Application::update()
 {
+	// Clear buffers
+	glClearColor(0.07f, 0.07f, 0.07f, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 	// Scene updating
 	scene.update();
 
