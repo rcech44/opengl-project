@@ -202,6 +202,10 @@ glm::mat4 DrawableObject::transform()
 				this->last_position = glm::rotate(last_position, t.getValues().y, { 0.f, 1.f, 0.f });
 				this->last_position = glm::rotate(last_position, t.getValues().z, { 0.f, 0.f, 1.f });
 				break;
+			case RotationAxis:
+				// Rotate by given axis
+				this->last_position = glm::rotate(last_position, t.getAngle(), t.getValues());
+				break;
 			case Scale:
 				this->last_position = glm::scale(last_position, t.getValues());
 				break;
@@ -219,6 +223,13 @@ void DrawableObject::addTransformation(glm::vec3 tf, int type)
 	// Add transformation to "queue"
 	this->transformations.push_back(Transformation(tf, type));
 }
+
+void DrawableObject::addTransformation(glm::vec3 tf, float angle, int type)
+{
+	// Add transformation to "queue"
+	this->transformations.push_back(Transformation(tf, angle, type));
+}
+
 
 void DrawableObject::setColor(glm::vec3 color)
 {

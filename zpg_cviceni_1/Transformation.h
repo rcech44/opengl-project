@@ -17,7 +17,8 @@ enum TransformationType
 {
 	Translation = 0,
 	Rotation = 1,
-	Scale = 2
+	Scale = 2,
+	RotationAxis = 3
 };
 
 class Transformation
@@ -25,9 +26,14 @@ class Transformation
 private:
 	glm::vec3 values{0.f};
 	int type;
+
+	// RotationAxis
+	float angle;
 public:
 	Transformation(glm::vec3 vals, int type);
+	Transformation(glm::vec3 vals, float angle, int type);
 	int getType();
 	glm::vec3 getValues();
+	float getAngle();
 };
 

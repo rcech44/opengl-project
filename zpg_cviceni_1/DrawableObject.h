@@ -49,6 +49,7 @@ public:
 
 	glm::mat4 transform();
 	void addTransformation(glm::vec3 tf, int type);
+	void addTransformation(glm::vec3 tf, float angle, int type);
 	void setPosition(glm::vec3 pos);
 	void setColor(glm::vec3 color);
 	void assignTexture(int t);

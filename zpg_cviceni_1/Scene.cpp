@@ -218,7 +218,7 @@ void Scene::init()
 	// Scene 0 - lighting test - four spheres with light source
 	// Scene 1 - larger scene with multiple models and shaders
 
- 	int set_scene = 0;
+ 	int set_scene = 1;
 
 	switch (set_scene)
 	{
@@ -399,6 +399,7 @@ void Scene::init()
 			DrawableObject do_zombie = DrawableObject(m10, sh6, this, object_id++);
 			do_zombie.addTransformation(glm::vec3(-2.f, 0.f, -7.f), Translation);
 			do_zombie.addTransformation(glm::vec3(1.3f, 1.3f, 1.3f), Scale);
+			do_zombie.addTransformation(glm::vec3(0.5, 0.5, 0.5), glm::radians(45.f), RotationAxis);
 			do_zombie.assignTexture(t6->getID());
 			addObject(&do_zombie);
 

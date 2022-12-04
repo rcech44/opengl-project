@@ -48,7 +48,7 @@ void Mouse::calculatePosition(double x, double y)
 
 	// Moving up or down
 	pitch -= (float)y_offset;
-
+	
 	// Do not allow roll over top or bottom
 	if (pitch > 89.0f) pitch = 89.0f;
 	if (pitch < -89.0f) pitch = -89.0f;
