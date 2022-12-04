@@ -153,6 +153,11 @@ void DrawableObject::render()
 						}
 						else this->shader->intInsert(0, "flashlightEnabled");
 						break;
+
+					case LightType::Spotlight:
+						this->shader->floatInsert(lights->at(i).cutoff, l_cutoff.c_str());
+						this->shader->floatInsert(lights->at(i).outer_cutoff, l_out_cutoff.c_str());
+						break;
 				}
 			}
 			break;

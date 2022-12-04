@@ -32,7 +32,7 @@ void main ()
 	vec3 normalVector = normalize(normal);
 	
 	// Ambientni slozka
-	vec3 ambient = vec3(0.05, 0.05, 0.05);
+	vec3 ambient = vec3(0.05, 0.05, 0.05) * objectColor;
 	
 	for (int i = 0; i < lightCount; i++)
 	{
@@ -47,6 +47,11 @@ void main ()
                 break;
             case 2:
                 result += directional_light(FragPos, normalVector, lightDirection, lightColor, lightStrength);
+                break;
+			case 3:
+				float cutoff = lights[i].cut;
+				float outer_cutoff = lights[i].out_cut;
+				result += spot_light(FragPos, normalVector, lightPosition, lightDirection, lightColor, cutoff, outer_cutoff, lightStrength);
                 break;
             case 4:
                 if (flashlightEnabled == 1)

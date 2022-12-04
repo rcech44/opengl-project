@@ -29,8 +29,8 @@ public:
     glm::vec3 position;
     glm::vec3 direction;
     int type;
-    float cutoff = 0.0f;
-    float outer_cutoff = 0.0f;
+    float cutoff = glm::cos(glm::radians(30.f));
+    float outer_cutoff = glm::cos(glm::radians(35.f));
     float strength = 1.0f;
 
     // Used for orbiting

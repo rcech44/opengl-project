@@ -218,7 +218,7 @@ void Scene::init()
 	// Scene 0 - lighting test - four spheres with light source
 	// Scene 1 - larger scene with multiple models and shaders
 
- 	int set_scene = 1;
+ 	int set_scene = 0;
 
 	switch (set_scene)
 	{
@@ -286,6 +286,7 @@ void Scene::init()
 			Light light6 = Light(LightType::Point);
 			Light light7 = Light(LightType::Point);
 			Light light8 = Light(LightType::Point);
+			Light light9 = Light(LightType::Spotlight);
 
 			light3.setColor(glm::vec3(0.8, 0, 1));
 			light6.setColor(glm::vec3(1, 1, 0));
@@ -299,18 +300,22 @@ void Scene::init()
 			light4.setCutoff(glm::cos(glm::radians(30.f)));
 			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
 			light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
-			light5.setStrength(0.1f);
+			light5.setStrength(0.05f);
 			light3.setStrength(3.f);
 			light6.setStrength(3.f);
 			light7.setStrength(3.f);
 			light8.setStrength(1.f);
+			light9.setPosition(glm::vec3(0.0, 2.0, 3.0));
+			light9.setDirection(glm::vec3(0.3, 0.0, -1.0));
+			light9.setStrength(2.f);
 
 			addLight(&light3);
 			addLight(&light4);
 			addLight(&light5);
 			addLight(&light6);
 			addLight(&light7);
-			addLight(&light8);
+			//addLight(&light8);
+			addLight(&light9);
 
 			// Create movement
 			ObjectMovement* line_move = new ObjectMovement(glm::vec3(0, 10, 0), glm::vec3(0, 2, -30), 0.001);
@@ -321,7 +326,7 @@ void Scene::init()
 			// Render all light sources as light spheres
 			for (Light& l : lights)
 			{
-				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional)
+				if (l.type != LightType::SpotlightCamera && l.type != LightType::Directional && l.type != LightType::Spotlight)
 				{
 					DrawableObject do_temp = DrawableObject(m2, sh5, this, object_id++);
 					do_temp.setColor(l.color);

@@ -41,11 +41,11 @@ void main ()
     // Získání texelu na konkrétním místě
 	vec4 tex = texture(textureUnitID_texture, uvc);
 	
-	// Ambientni slozka
-	vec3 ambient = vec3(0.05, 0.05, 0.05);
-
     // Získáni barev texelu
     vec3 color = vec3(tex.x, tex.y, tex.z);
+	
+	// Ambientni slozka
+	vec3 ambient = vec3(0.02, 0.02, 0.02) * color;
 	
 	for (int i = 0; i < lightCount; i++)
 	{
@@ -60,6 +60,11 @@ void main ()
                 break;
             case 2:
                 result += directional_light(FragPos, normalVector, lightDirection, lightColor, lightStrength, color);
+                break;
+			case 3:
+				float cutoff = lights[i].cut;
+				float outer_cutoff = lights[i].out_cut;
+				result += spot_light(FragPos, normalVector, lightPosition, lightDirection, lightColor, cutoff, outer_cutoff, lightStrength, color);
                 break;
             case 4:
                 if (flashlightEnabled == 1)
