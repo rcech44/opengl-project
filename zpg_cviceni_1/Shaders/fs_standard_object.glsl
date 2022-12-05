@@ -80,7 +80,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
     // Konstantní člen - často 1.0, zajišťuje, aby hodnota nebyla menší než jedna
     // Lineární člen - 0.09 * vzdálenost, linárně zmenšuje intenzitu
     // Kvadratický člen - 0.032 * pow(vzdálenost, 2), méně účinný při malých vzdálenostech, ale efektivní při větších vzdálenostech
-    float attenuation = 1.0 / (1.0 + 0.09 * dist + 0.032 * (dist * dist));
+    float attenuation = 1.0 / (1.0 + 0.01 * dist + 0.00001 * (dist * dist));
 
 	// Odectenim pozic fragmentu a kamery ziskame smer pohledu
     vec3 viewDir = normalize(viewPos - worldPos);
@@ -93,7 +93,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 
 	// Cosinus uhlu mezi dvema danymi vektory a max zajisti, ze neni zaporny
     float dot_product = dot(lightDir, normalVector);
-    vec3 diffuse = abs(dot_product) * lightColor * attenuation;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
 	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
@@ -143,7 +143,7 @@ const float specularStrength = 0.4;
     float dot_product = dot(lightDirectionToObject, normalVector);
 	
 	// difuzni slozka, max - zajisteni, ze neni nulove
-    vec3 diffuse = abs(dot_product) * lightColor * attenuation;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
 	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
@@ -172,7 +172,7 @@ vec3 directional_light(vec3 worldPos, vec3 normalVector, vec3 lightDirection, ve
     float dot_product = dot(lightDir, normalVector);
 	
 	// Difuzni slozka
-    vec3 diffuse = abs(dot_product) * lightColor;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor;
 
 	// Smer pohledu k fragmentu od kamery
     vec3 viewDir = normalize(viewPos - worldPos);

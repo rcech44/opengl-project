@@ -43,6 +43,7 @@ public:
 	void addTexture(Texture* t, int id);
 	void placeNewObject(glm::vec3 pos, int object_name, int shader);
 	void removeObject(int id);
+	void startRotate(int id);
 
 	Camera* getCamera();
 	std::vector<Light>* getLights();

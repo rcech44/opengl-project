@@ -66,7 +66,6 @@ public:
 	void setSkyBox();
 	void setWithTexture();
 	void setObject();
-	void setObjectTest();
 	void setObjectWithNormals();
 	int getName();
 	void createVAOVBO();

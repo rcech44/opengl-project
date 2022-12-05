@@ -40,7 +40,9 @@ private:
 	double to_x;
 	double to_y;
 	double to_z;
-	bool inverted;
+	bool inverted = false;
+	int total_steps = 0;
+	int current_steps = 0;
 
 	// Orbit
 	double speed;

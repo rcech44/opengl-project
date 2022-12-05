@@ -251,6 +251,11 @@ int DrawableObject::getID()
 	return this->id;
 }
 
+glm::vec3 DrawableObject::getPosition()
+{
+	return glm::vec3(this->last_position[3][0], this->last_position[3][1], this->last_position[3][2]);
+}
+
 const char* DrawableObject::getName()
 {
 	return this->name;

@@ -158,8 +158,8 @@ void Application::button_callback(GLFWwindow* window, int button, int action, in
 		if (button == GLFW_MOUSE_BUTTON_LEFT)
 			this->scene.removeObject(index);
 			//this->scene.placeNewObject(pos, Tree2, StandardObjectTextured);
-		//if (button == GLFW_MOUSE_BUTTON_RIGHT)
-		//	this->scene.placeNewObject(pos, Zombie, StandardObjectTextured);
+		if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+			this->scene.startRotate(index);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 			this->scene.placeNewObject(pos, Sphere, StandardObject);
 	}

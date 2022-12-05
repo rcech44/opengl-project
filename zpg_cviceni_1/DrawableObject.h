@@ -57,6 +57,7 @@ public:
 	void assignMovement(ObjectMovement* m);
 	void move();
 	int getID();
+	glm::vec3 getPosition();
 	const char* getName();
 };
 

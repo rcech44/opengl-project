@@ -11,6 +11,7 @@ ObjectMovement::ObjectMovement(glm::vec3 from, glm::vec3 to, double speed)
 	this->to_z = to.z;
 	this->speed = speed;
 	this->type = Line;
+	this->total_steps = 1 / speed;
 }
 
 ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed, int type)
@@ -20,6 +21,7 @@ ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed, int
 	this->speed = speed;
 	this->type = type;
 	this->angle = 0;
+	this->total_steps = 1 / speed;
 }
 
 void ObjectMovement::move(DrawableObject* obj)
@@ -28,11 +30,28 @@ void ObjectMovement::move(DrawableObject* obj)
 	{
 		// Move on line
 		case Line:
-			obj->addTransformation(glm::vec3(
-				(to_x - from_x) * speed,
-				(to_y - from_y) * speed,
-				(to_z - from_z) * speed
-			), Translation);
+			if (!inverted)
+			{
+				obj->addTransformation(glm::vec3(
+					(to_x - from_x) * speed,
+					(to_y - from_y) * speed,
+					(to_z - from_z) * speed
+				), Translation);
+			}
+			else
+			{
+				obj->addTransformation(glm::vec3(
+					-(to_x - from_x) * speed,
+					-(to_y - from_y) * speed,
+					-(to_z - from_z) * speed
+				), Translation);
+			}
+			current_steps++;
+			if (current_steps == total_steps)
+			{
+				current_steps = 0;
+				inverted = !inverted;
+			}
 			break;
 
 		// Orbit around object
