@@ -230,7 +230,6 @@ void DrawableObject::addTransformation(glm::vec3 tf, float angle, int type)
 	this->transformations.push_back(Transformation(tf, angle, type));
 }
 
-
 void DrawableObject::setColor(glm::vec3 color)
 {
 	this->color = color;

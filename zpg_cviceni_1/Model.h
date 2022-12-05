@@ -6,6 +6,7 @@
 //Include GLFW  
 #include <GLFW/glfw3.h>  
 #include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec3
 
 //Include SOIL
 #include <SOIL.h>
@@ -37,7 +38,8 @@ enum ModelName
 	Zombie = 8,
 	Tree2 = 9,
 	Plain2 = 10,
-	Box = 11
+	Box = 11,
+	Dragon = 12
 };
 
 class Model
@@ -48,6 +50,7 @@ private:
 	int type = -1;
 	GLuint VAO = -1;
 	GLuint VBO = -1;
+	GLuint IBO = -1;
 	const float* points = nullptr;
 	const char* path = nullptr;
 	std::vector<float> points_obj;
@@ -63,6 +66,7 @@ public:
 	void setSkyBox();
 	void setWithTexture();
 	void setObject();
+	void setObjectTest();
 	void setObjectWithNormals();
 	int getName();
 	void createVAOVBO();

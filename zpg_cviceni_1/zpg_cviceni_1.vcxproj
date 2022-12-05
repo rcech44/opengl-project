@@ -76,13 +76,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\rcech\Documents\OpenGL\soil\include;C:\Users\rcech\Documents\OpenGL\glew-2.1.0\include;C:\Users\rcech\Documents\OpenGL\glm-master;C:\Users\rcech\Documents\OpenGL\glfw-3.3.8.bin.WIN32\include;C:\Users\rcech\Documents\OpenGL\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Radek\Documents\OpenGL\soil\include;C:\Users\Radek\Documents\OpenGL\glew-2.1.0\include;C:\Users\Radek\Documents\OpenGL\glm-master;C:\Users\Radek\Documents\OpenGL\glfw-3.3.8.bin.WIN32\include;C:\Users\Radek\Documents\OpenGL\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glfw3.lib;glew32.lib;SOIL.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\rcech\Documents\OpenGL\assimp\lib\Win32\v141\Debug;C:\Users\rcech\Documents\OpenGL\glfw-3.3.8.bin.WIN32\lib-vc2022;C:\Users\rcech\Documents\OpenGL\glew-2.1.0\lib\Release\Win32;C:\Users\rcech\Documents\OpenGL\soil\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Radek\Documents\OpenGL\assimp\lib\Win32\v141\Debug;C:\Users\Radek\Documents\OpenGL\glfw-3.3.8.bin.WIN32\lib-vc2022;C:\Users\Radek\Documents\OpenGL\glew-2.1.0\lib\Release\Win32;C:\Users\Radek\Documents\OpenGL\soil\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

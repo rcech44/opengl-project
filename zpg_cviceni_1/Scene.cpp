@@ -148,6 +148,7 @@ void Scene::init()
 	Model* m11 = new Model(Tree2, ObjectType, "Models/tree/tree.obj", GL_TRIANGLES, 3, 3);
 	Model* m12 = new Model(Plain2, ObjectType, "Models/teren/teren.obj", GL_TRIANGLES, 3, 3);
 	Model* m13 = new Model(Box, ObjectType, "Models/box/model.obj", GL_TRIANGLES, 3, 3);
+	Model* m14 = new Model(Dragon, ObjectType, "Models/dragon/Dragon.obj", GL_TRIANGLES, 3, 3);
 
 	// Models init
 	m1->set();
@@ -162,6 +163,7 @@ void Scene::init()
 	m11->setObject();
 	m12->setObject();
 	m13->setObjectWithNormals();
+	m14->setObjectTest();
 
 	// Add models
 	addModel(m1, Monkey);
@@ -176,6 +178,7 @@ void Scene::init()
 	addModel(m11, Tree2);
 	addModel(m12, Plain2);
 	addModel(m13, Box);
+	addModel(m14, Dragon);
 
 	// Shaders init
 	sh1->set();
@@ -213,6 +216,10 @@ void Scene::init()
 	Texture* t8 = new Texture(TextureType::Standard);
 	t8->assignTextureWithNormal("Models/box/albedo.png", "Models/box/normalmap.png");
 	addTexture(t8, Box);
+
+	//Texture* t9 = new Texture(TextureType::Standard);
+	//t9->assignTexture("Models/dragon/Texture.png");
+	//addTexture(t9, Dragon);
 
 
 	// Scene 0 - lighting test - four spheres with light source
@@ -301,13 +308,13 @@ void Scene::init()
 			light4.setOuterCutoff(glm::cos(glm::radians(35.f)));
 			light5.setDirection(glm::vec3(0.0, -1.0, 0.0));
 			light5.setStrength(0.05f);
-			light3.setStrength(3.f);
-			light6.setStrength(3.f);
-			light7.setStrength(3.f);
+			light3.setStrength(2.f);
+			light6.setStrength(2.f);
+			light7.setStrength(2.f);
 			light8.setStrength(1.f);
 			light9.setPosition(glm::vec3(0.0, 2.0, 3.0));
 			light9.setDirection(glm::vec3(0.3, 0.0, -1.0));
-			light9.setStrength(2.f);
+			light9.setStrength(1.f);
 
 			addLight(&light3);
 			addLight(&light4);
@@ -406,6 +413,12 @@ void Scene::init()
 			DrawableObject do_ground = DrawableObject(m12, sh6, this, object_id++);
 			do_ground.assignTexture(t1->getID());
 			addObject(&do_ground);
+
+			DrawableObject do_dragon = DrawableObject(m14, sh1, this, object_id++);
+			do_dragon.setColor(glm::vec3(1, 0.7, 0.7));
+			do_dragon.addTransformation(glm::vec3(0, 10, -5), Translation);
+			do_dragon.addTransformation(glm::vec3(0.1, 0.1, 0.1), Scale);
+			addObject(&do_dragon);
 
 			DrawableObject do_skybox = DrawableObject(m8, sh7, this, object_id++);
 			do_skybox.assignTexture(t4->getID());
