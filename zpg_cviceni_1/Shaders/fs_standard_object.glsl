@@ -71,7 +71,7 @@ void main ()
 
 vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightColor, float lightStrength) 
 {
-    const float specularStrength = 0.4;
+    const float specularStrength = 0.6;
 
 	// Vzdalenost mezi svetlem a fragmentem
     float dist = length(lightPosition - worldPos);
@@ -96,7 +96,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
     vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
 	// Umocnění specular odrazu konstantou (změna intenzity)
-    float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
+    float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 128);
     vec3 spec = specularStrength * specValue * lightColor;
 	
 	// Pokud neni osvetleno, vratit 0

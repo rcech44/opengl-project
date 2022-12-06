@@ -24,6 +24,22 @@ ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed, int
 	this->total_steps = 1 / speed;
 }
 
+ObjectMovement::ObjectMovement(glm::vec3 point, double radius, double speed, int type, double angle)
+{
+	this->point = point;
+	this->orbit_radius = radius;
+	this->speed = speed;
+	this->type = type;
+	this->angle = 0;
+	this->total_steps = 1 / speed;
+	this->angle = angle;
+}
+
+double ObjectMovement::getAngle()
+{
+	return this->angle;
+}
+
 void ObjectMovement::move(DrawableObject* obj)
 {
 	switch (this->type)

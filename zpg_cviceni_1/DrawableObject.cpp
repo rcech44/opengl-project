@@ -273,3 +273,14 @@ void DrawableObject::move()
 		this->movement->move(this);
 	}
 }
+
+double DrawableObject::getAngle()
+{
+	return this->movement->getAngle();
+}
+
+bool DrawableObject::hasMovement()
+{
+	if (this->movement) return true;
+	return false;
+}
