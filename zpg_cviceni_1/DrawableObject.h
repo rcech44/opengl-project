@@ -59,7 +59,5 @@ public:
 	int getID();
 	glm::vec3 getPosition();
 	const char* getName();
-	double getAngle();
-	bool hasMovement();
 };
 

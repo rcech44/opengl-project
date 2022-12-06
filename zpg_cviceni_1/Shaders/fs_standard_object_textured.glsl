@@ -100,7 +100,7 @@ vec3 point_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 ligh
 
 	// Cosinus uhlu mezi dvema danymi vektory a max zajisti, ze neni zaporny
     float dot_product = dot(lightDir, normalVector);
-    vec3 diffuse = abs(dot_product) * lightColor * attenuation;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
 	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
@@ -150,7 +150,7 @@ vec3 spot_light(vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 light
     float dot_product = dot(lightDirectionToObject, normalVector);
 	
 	// difuzni slozka, max - zajisteni, ze neni nulove
-    vec3 diffuse = abs(dot_product) * lightColor * attenuation;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor * attenuation;
 
 	// Umocnění specular odrazu konstantou (změna intenzity)
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
@@ -179,7 +179,7 @@ vec3 directional_light(vec3 worldPos, vec3 normalVector, vec3 lightDirection, ve
     float dot_product = dot(lightDir, normalVector);
 	
 	// Difuzni slozka
-    vec3 diffuse = abs(dot_product) * lightColor;
+    vec3 diffuse = max(dot_product, 0.0) * lightColor;
 
 	// Smer pohledu k fragmentu od kamery
     vec3 viewDir = normalize(viewPos - worldPos);

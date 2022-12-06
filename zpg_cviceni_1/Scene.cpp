@@ -124,26 +124,21 @@ std::vector<Light>* Scene::getLights()
 
 void Scene::update()
 {
-	glm::vec3 last_pos;
 	for (auto& s : skyboxes)
 	{	
 		s.render();
 	}
 	for (auto& o : objects)
 	{
-		if (o.getName() == "GiftBox")
-		{
-			if (o.hasMovement()) o.assignMovement(new ObjectMovement(last_pos, 3, 0.5, Orbit, o.getAngle() + 2));
-			else o.assignMovement(new ObjectMovement(last_pos, 3, 0.5, Orbit));
-		}
 		o.move();
-		last_pos = o.getPosition();
 		o.render();
 	}
 }
 
 void Scene::init()
 {
+	srand(time(NULL));
+
 	// Create shaders
 	Shader* sh1 = new Shader("Shaders/fs_standard_object.glsl", "Shaders/vs_standard_object.glsl", StandardObject);													// standard shader
 	Shader* sh6 = new Shader("Shaders/fs_standard_object_textured.glsl", "Shaders/vs_standard_object_textured.glsl", StandardObjectTextured);						// standard shader with textures
@@ -224,7 +219,7 @@ void Scene::init()
 
 	Texture* t4 = new Texture(TextureType::CubeMap);
 	t4->assignTexture("Textures/skybox2/px.png", "Textures/skybox2/nx.png", "Textures/skybox2/py.png", "Textures/skybox2/ny.png", "Textures/skybox2/pz.png", "Textures/skybox2/nz.png");
-	addTexture(t4, SkyCube); 
+	addTexture(t4, SkyCube);
 
 	Texture* t8 = new Texture(TextureType::Standard);
 	t8->assignTextureWithNormal("Models/box/albedo.png", "Models/box/normalmap.png");
@@ -266,10 +261,6 @@ void Scene::init()
 			do_sphere_5.setColor(glm::vec3(1, 1, 0));
 			do_sphere_5.assignMovement(orbit_move_4);
 			addObject(&do_sphere_5);
-
-			DrawableObject do_gift = DrawableObject(m7, sh1, this, this->object_id++);
-			do_gift.setColor(glm::vec3(0.8, 0.5, 0.5));
-			addObject(&do_gift);
 
 			// Add plain (ground)
 			DrawableObject do_ground = DrawableObject(m4, sh1, this, this->object_id++);
@@ -415,30 +406,6 @@ void Scene::init()
 			do_tree5.assignTexture(t7->getID());
 			addObject(&do_tree5);
 
-			DrawableObject do_tree6 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree6.addTransformation(glm::vec3(-6.f, 0.f, -2.f), Translation);
-			do_tree6.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
-			do_tree6.assignTexture(t7->getID());
-			addObject(&do_tree6);
-
-			DrawableObject do_tree7 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree7.addTransformation(glm::vec3(0.f, 0.f, -1.f), Translation);
-			do_tree7.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
-			do_tree7.assignTexture(t7->getID());
-			addObject(&do_tree7);
-
-			DrawableObject do_tree8 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree8.addTransformation(glm::vec3(4.f, 0.f, -1.f), Translation);
-			do_tree8.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
-			do_tree8.assignTexture(t7->getID());
-			addObject(&do_tree8);
-
-			DrawableObject do_tree9 = DrawableObject(m11, sh6, this, object_id++);
-			do_tree9.addTransformation(glm::vec3(2.f, 0.f, -7.f), Translation);
-			do_tree9.addTransformation(glm::vec3(0.3f, 0.3f, 0.3f), Scale);
-			do_tree9.assignTexture(t7->getID());
-			addObject(&do_tree9);
-
 			DrawableObject do_building = DrawableObject(m9, sh6, this, object_id++);
 			do_building.addTransformation(glm::vec3(-20.0f, 0.0f, -30.0f), Translation);
 			do_building.addTransformation(glm::vec3(2.0f, 2.0f, 2.0f), Scale);
@@ -454,19 +421,6 @@ void Scene::init()
 			do_zombie.assignMovement(line_move);
 			addObject(&do_zombie);
 
-			DrawableObject do_gift = DrawableObject(m7, sh1, this, object_id++);
-			do_gift.setColor(glm::vec3(0.4, 0.9, 0.4));
-			do_gift.addTransformation(glm::vec3(-10, 0, -8), Translation);
-			do_gift.addTransformation(glm::vec3(3, 3, 3), Scale);
-			do_gift.addTransformation(glm::vec3(0, glm::radians(30.f), 0), Rotation);
-			addObject(&do_gift);
-
-			DrawableObject do_smalltree = DrawableObject(m11, sh6, this, object_id++);
-			do_smalltree.addTransformation(glm::vec3(-3.7, 0, -11.5), Translation);
-			do_smalltree.addTransformation(glm::vec3(0.06, 0.06, 0.06), Scale);
-			do_smalltree.assignTexture(t7->getID());
-			addObject(&do_smalltree);
-
 			DrawableObject do_ground = DrawableObject(m12, sh6, this, object_id++);
 			do_ground.assignTexture(t1->getID());
 			addObject(&do_ground);
@@ -475,7 +429,6 @@ void Scene::init()
 			do_skybox.assignTexture(t4->getID());
 			addSkybox(&do_skybox);
 
-			// Create "sun"
 			DrawableObject do_sun = DrawableObject(m2, sh5, this, object_id++);
 			do_sun.setColor(glm::vec3(1, 1, 0));
 			do_sun.assignMovement(orbit_move_3);
@@ -495,7 +448,7 @@ void Scene::init()
 				addObject(&do_bush);
 			}
 
-			// Create moving box
+			// Create moving sphere
 			DrawableObject do_box1 = DrawableObject(m13, sh8, this, object_id++);
 			do_box1.assignTexture(t8->getID(), t8->getNormalID());
 			do_box1.assignMovement(orbit_move);

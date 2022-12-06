@@ -54,7 +54,5 @@ public:
 	ObjectMovement() {};
 	ObjectMovement(glm::vec3 from, glm::vec3 to, double speed);
 	ObjectMovement(glm::vec3 point, double radius, double speed, int type);
-	ObjectMovement(glm::vec3 point, double radius, double speed, int type, double angle);
 	void move(DrawableObject* obj);
-	double getAngle();
 };

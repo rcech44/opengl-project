@@ -31,11 +31,11 @@ void main ()
 	normal = mat3(transpose(inverse(modelMatrix))) * nor;
 	mat3 normalMat = transpose(inverse(mat3(modelMatrix)));
 
-	// Jednotkove vektory
+	// Gram Schmidt orthonormalization - zajisteni, ze tangenta a bitangenta budou kolme (nemusi byt)
 	vec3 _normal = normalize(nor);
     vec3 _tangent = normalize(tg);
 
-	// Gram Schmidt orthonormalization - zajisteni, ze tangenta a bitangenta budou kolme (nemusi byt)
+	// Dot product - součin vektorů, udává vychýlení dvou vektorů v rozmezí (-1, 1), kdy -1 = jsou opačně, 1 = jsou ve stejném směru, 0 = kolmé
     _tangent = normalize(_tangent - dot(_tangent, _normal) * _normal);
 	
 	// Cross product - nalezeni vektoru, ktery je kolmy na tangetu a normalu = bitangenta
