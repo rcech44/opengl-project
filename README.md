@@ -1,2 +1,3 @@
-# zpg_projekt
-Projekt do předmětu ZPG.
+# OpenGL University Project
+
+Complete simple OpenGL engine.
